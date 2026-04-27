@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
+import { ChevronDown } from 'lucide-react'
 import type { Task, Tag } from '@task-app/shared'
+import type { TaskStatus } from '@task-app/shared'
+import { useUpdateTaskMutation } from '../store/api'
 
 const STATUS_LABEL: Record<Task['status'], string> = {
   todo: 'To Do',
@@ -37,6 +40,11 @@ interface Props {
 
 export default function TaskCard({ task, tagsById }: Props) {
   const overdue = isOverdue(task)
+  const [updateTask, { isLoading }] = useUpdateTaskMutation()
+
+  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    updateTask({ id: task.id, body: { status: e.target.value as TaskStatus } })
+  }
 
   return (
     <Link
@@ -49,9 +57,20 @@ export default function TaskCard({ task, tagsById }: Props) {
       <div className="flex items-start justify-between gap-4">
         <h2 className="font-semibold leading-snug">{task.title}</h2>
         <div className="flex shrink-0 gap-2">
-          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[task.status]}`}>
-            {STATUS_LABEL[task.status]}
-          </span>
+          {/* stop click from triggering the Link navigation */}
+          <div onClick={(e) => e.preventDefault()} className="relative flex items-center">
+            <select
+              value={task.status}
+              onChange={handleStatusChange}
+              disabled={isLoading}
+              className={`appearance-none cursor-pointer rounded-md border py-0.5 pl-2.5 pr-6 text-xs font-medium outline-none transition-shadow hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${STATUS_CLASS[task.status]}`}
+            >
+              {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
+                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-1.5 h-3 w-3 opacity-50" />
+          </div>
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${PRIORITY_CLASS[task.priority]}`}>
             {PRIORITY_LABEL[task.priority]}
           </span>
