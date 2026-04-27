@@ -4,7 +4,7 @@
 
 - **React with TypeScript** — UI framework
 - **Tailwind CSS + shadcn/ui** — styling and component library
-- **React Router** - routing
+- **React Router V6** - routing
 - **react-hook-form, zod** - forms and validation
 - **RTK Query** - data fetching
 - **Vite** - build tool
