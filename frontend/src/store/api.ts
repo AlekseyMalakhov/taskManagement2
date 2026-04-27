@@ -1,10 +1,26 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { Task, Tag } from "@task-app/shared";
 import type { CreateTaskDto, UpdateTaskDto, CreateTagDto } from "@task-app/shared";
 
+const rawBase = fetchBaseQuery({ baseUrl: "http://localhost:3000" });
+
+const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  const result = await rawBase(args, api, extraOptions);
+  if (result.error) return result;
+  if (result.data && typeof result.data === "object" && "data" in result.data) {
+    return { data: (result.data as { data: unknown }).data, meta: result.meta };
+  }
+  return result;
+};
+
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000" }),
+  baseQuery,
   tagTypes: ["Task", "Tag"],
   endpoints: (builder) => ({
     getTasks: builder.query<Task[], { tag?: string } | void>({
