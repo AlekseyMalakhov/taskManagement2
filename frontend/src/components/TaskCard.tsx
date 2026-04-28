@@ -17,7 +17,17 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }:
   const [updateTask, { isLoading }] = useUpdateTaskMutation()
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    updateTask({ id: task.id, body: { status: e.target.value as TaskStatus } })
+    updateTask({
+      id: task.id,
+      body: {
+        title: task.title,
+        description: task.description,
+        status: e.target.value as TaskStatus,
+        priority: task.priority,
+        deadline: task.deadline,
+        tagIds: task.tags,
+      },
+    })
   }
 
   return (

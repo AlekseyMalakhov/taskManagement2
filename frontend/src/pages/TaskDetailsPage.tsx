@@ -80,7 +80,14 @@ export default function TaskDetailsPage() {
                         onChange={(e) =>
                           updateTask({
                             id: task.id,
-                            body: { status: e.target.value as TaskStatus },
+                            body: {
+                              title: task.title,
+                              description: task.description,
+                              status: e.target.value as TaskStatus,
+                              priority: task.priority,
+                              deadline: task.deadline,
+                              tagIds: task.tags,
+                            },
                           })
                         }
                         disabled={isUpdating}
