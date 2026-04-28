@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { useGetTasksQuery, useGetTagsQuery } from '../store/api'
 import TaskCard from '../components/TaskCard'
@@ -8,18 +9,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import CreateTaskForm from '../components/CreateTaskForm'
 
 export default function HomePage() {
-  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set())
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedTagIds = useMemo(() => new Set(searchParams.getAll('tag')), [searchParams])
   const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery()
   const { data: tags } = useGetTagsQuery()
   const [open, setOpen] = useState(false)
 
   function handleTagClick(tagId: string) {
-    setSelectedTagIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(tagId)) next.delete(tagId)
-      else next.add(tagId)
-      return next
-    })
+    const current = searchParams.getAll('tag')
+    const next = current.includes(tagId)
+      ? current.filter((id) => id !== tagId)
+      : [...current, tagId]
+    setSearchParams(next.length > 0 ? { tag: next } : {}, { replace: true })
   }
 
   const tagsById = useMemo(() => {
