@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import type { Tag } from "@task-app/shared";
 import { tags } from "../store";
-import { createTagSchema } from "../validation";
+import { createTagSchema } from "@task-app/shared";
 
 const router = Router();
 

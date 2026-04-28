@@ -2,5 +2,8 @@
   "name": "@task-app/shared",
   "private": true,
   "module": "src/index.ts",
-  "types": "src/index.ts"
+  "types": "src/index.ts",
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
 }

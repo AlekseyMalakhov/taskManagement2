@@ -2,10 +2,9 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import type { Task } from "@task-app/shared";
 import { tasks, tags } from "../store";
-import { createTaskSchema, updateTaskSchema } from "../validation";
+import { createTaskSchema, updateTaskSchema } from "@task-app/shared";
 
 const router = Router();
-const formatDateOnly = (date: Date) => date.toISOString().slice(0, 10);
 
 router.get("/", (req: Request, res: Response) => {
   const { tag } = req.query;
@@ -43,7 +42,7 @@ router.post("/", (req: Request, res: Response) => {
     description: dto.description,
     status: dto.status,
     priority: dto.priority,
-    deadline: formatDateOnly(dto.deadline),
+    deadline: dto.deadline,
     tags: dto.tagIds,
     createdAt: now,
     updatedAt: now,
@@ -78,7 +77,7 @@ router.patch("/:id", (req: Request, res: Response) => {
     ...(dto.description !== undefined && { description: dto.description }),
     ...(dto.status !== undefined && { status: dto.status }),
     ...(dto.priority !== undefined && { priority: dto.priority }),
-    ...(dto.deadline !== undefined && { deadline: formatDateOnly(dto.deadline) }),
+    ...(dto.deadline !== undefined && { deadline: dto.deadline }),
     ...(dto.tagIds !== undefined && { tags: dto.tagIds }),
     updatedAt: new Date().toISOString(),
   };

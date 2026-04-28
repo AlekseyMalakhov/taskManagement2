@@ -3,21 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
 import type { Tag } from "@task-app/shared"
+import { createTaskSchema } from "@task-app/shared"
 
 import { Button } from "./ui/button"
 import { DialogClose, DialogFooter } from "./ui/dialog"
 import { useCreateTaskMutation } from "../store/api"
 
-const schema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  status: z.enum(["todo", "inProgress", "done"]),
-  priority: z.enum(["low", "medium", "high"]),
-  deadline: z.string().min(1, "Deadline is required"),
-  tagIds: z.array(z.string()),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof createTaskSchema>
 
 interface Props {
   tags: Tag[]
@@ -46,7 +38,7 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createTaskSchema),
     defaultValues: {
       title: "",
       description: "",
