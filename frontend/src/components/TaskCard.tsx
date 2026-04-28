@@ -1,37 +1,8 @@
 import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
-import type { Task, Tag } from '@task-app/shared'
-import type { TaskStatus } from '@task-app/shared'
+import type { Task, Tag, TaskStatus } from '@task-app/shared'
 import { useUpdateTaskMutation } from '../store/api'
-
-const STATUS_LABEL: Record<Task['status'], string> = {
-  todo: 'To Do',
-  inProgress: 'In Progress',
-  done: 'Done',
-}
-
-const STATUS_CLASS: Record<Task['status'], string> = {
-  todo: 'bg-slate-100 text-slate-700',
-  inProgress: 'bg-blue-100 text-blue-700',
-  done: 'bg-green-100 text-green-700',
-}
-
-const PRIORITY_LABEL: Record<Task['priority'], string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-}
-
-const PRIORITY_CLASS: Record<Task['priority'], string> = {
-  low: 'bg-green-100 text-green-700',
-  medium: 'bg-amber-100 text-amber-700',
-  high: 'bg-red-100 text-red-700',
-}
-
-function isOverdue(task: Task): boolean {
-  if (task.status === 'done') return false
-  return task.deadline < new Date().toISOString().slice(0, 10)
-}
+import { STATUS_LABEL, STATUS_CLASS, PRIORITY_LABEL, PRIORITY_CLASS, isOverdue } from '../lib/taskConstants'
 
 interface Props {
   task: Task
@@ -39,7 +10,7 @@ interface Props {
 }
 
 export default function TaskCard({ task, tagsById }: Props) {
-  const overdue = isOverdue(task)
+  const overdue = isOverdue(task.deadline, task.status)
   const [updateTask, { isLoading }] = useUpdateTaskMutation()
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
