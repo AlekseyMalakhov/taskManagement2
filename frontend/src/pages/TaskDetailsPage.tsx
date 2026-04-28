@@ -114,7 +114,7 @@ export default function TaskDetailsPage() {
                   <div className="flex items-center gap-2">
                     <span className="w-24 shrink-0 font-medium">Deadline</span>
                     <span className={overdue ? "font-medium text-red-600" : ""}>
-                      {task.deadline}
+                      {task.deadline.split('-').reverse().join('/')}
                       {overdue && " · Overdue"}
                     </span>
                   </div>
@@ -139,14 +139,14 @@ export default function TaskDetailsPage() {
                     <span className="w-24 shrink-0 font-medium text-foreground">
                       Created
                     </span>
-                    {new Date(task.createdAt).toLocaleString()}
+                    {new Date(task.createdAt).toLocaleString('en-GB')}
                   </div>
 
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <span className="w-24 shrink-0 font-medium text-foreground">
                       Updated
                     </span>
-                    {new Date(task.updatedAt).toLocaleString()}
+                    {new Date(task.updatedAt).toLocaleString('en-GB')}
                   </div>
                 </div>
               </div>

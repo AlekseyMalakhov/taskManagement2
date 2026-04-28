@@ -57,7 +57,7 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }:
 
       <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
         <span className={overdue ? 'font-medium text-red-600' : ''}>
-          Due {task.deadline}
+          Due {task.deadline.split('-').reverse().join('/')}
           {overdue && ' · Overdue'}
         </span>
 
