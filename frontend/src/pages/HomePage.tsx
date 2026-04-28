@@ -23,6 +23,7 @@ export default function HomePage() {
       ? current.filter((id) => id !== tagId)
       : [...current, tagId];
     updated.forEach((id) => next.append("tag", id));
+    next.delete("page");
     setSearchParams(next, { replace: true });
   }
 

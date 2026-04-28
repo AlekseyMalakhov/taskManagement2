@@ -1,5 +1,6 @@
 import type { Tag } from "@task-app/shared";
 import { useFilteredTasks } from "../hooks/useFilteredTasks";
+import Pagination from "./Pagination";
 import TaskCard from "./TaskCard";
 
 interface Props {
@@ -13,7 +14,8 @@ export default function TasksList({
   selectedTagIds,
   onTagClick,
 }: Props) {
-  const { filteredTasks, isLoading, isError } = useFilteredTasks();
+  const { filteredTasks, paginatedTasks, page, totalPages, isLoading, isError } =
+    useFilteredTasks();
 
   if (isLoading) return <p className="text-muted-foreground">Loading tasks…</p>;
   if (isError)
@@ -27,7 +29,7 @@ export default function TasksList({
 
   return (
     <div className="grid gap-3">
-      {filteredTasks.map((task) => (
+      {paginatedTasks!.map((task) => (
         <TaskCard
           key={task.id}
           task={task}
@@ -36,6 +38,8 @@ export default function TasksList({
           selectedTagIds={selectedTagIds}
         />
       ))}
+
+      <Pagination page={page} totalPages={totalPages} />
     </div>
   );
 }

@@ -14,6 +14,7 @@ export default function FilterPanel() {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, value);
     else next.delete(key);
+    next.delete("page");
     setSearchParams(next, { replace: true });
   }
 
