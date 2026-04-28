@@ -9,6 +9,10 @@ export interface CreateTaskDto {
   tagIds: string[];
 }
 
+export interface PatchTaskStatusDto {
+  status: TaskStatus;
+}
+
 export interface CreateTagDto {
   name: string;
 }

@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import {
   useGetTaskQuery,
   useGetTagsQuery,
-  useUpdateTaskMutation,
+  usePatchTaskStatusMutation,
   useDeleteTaskMutation,
 } from "../store/api";
 import type { Tag, TaskStatus } from "@task-app/shared";
@@ -24,7 +24,7 @@ export default function TaskDetailsPage() {
   const navigate = useNavigate();
   const { data: task, isLoading, isError } = useGetTaskQuery(id!);
   const { data: tags } = useGetTagsQuery();
-  const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
+  const [patchTaskStatus, { isLoading: isUpdating }] = usePatchTaskStatusMutation();
   const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -78,17 +78,7 @@ export default function TaskDetailsPage() {
                       <select
                         value={task.status}
                         onChange={(e) =>
-                          updateTask({
-                            id: task.id,
-                            body: {
-                              title: task.title,
-                              description: task.description,
-                              status: e.target.value as TaskStatus,
-                              priority: task.priority,
-                              deadline: task.deadline,
-                              tagIds: task.tags,
-                            },
-                          })
+                          patchTaskStatus({ id: task.id, status: e.target.value as TaskStatus })
                         }
                         disabled={isUpdating}
                         className={`appearance-none cursor-pointer rounded-md border py-1 pl-3 pr-7 text-sm font-medium outline-none transition-shadow hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${STATUS_CLASS[task.status]}`}

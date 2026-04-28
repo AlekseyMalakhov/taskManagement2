@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import type { Task } from "@task-app/shared";
 import { tasks, tags } from "../store";
-import { createTaskSchema, updateTaskSchema } from "@task-app/shared";
+import { createTaskSchema, updateTaskSchema, patchTaskStatusSchema } from "@task-app/shared";
 
 const router = Router();
 
@@ -80,6 +80,21 @@ router.put("/:id", (req: Request, res: Response) => {
     tags: dto.tagIds,
     updatedAt: new Date().toISOString(),
   };
+  res.json({ data: tasks[idx] });
+});
+
+router.patch("/:id/status", (req: Request, res: Response) => {
+  const idx = tasks.findIndex((t) => t.id === req.params.id);
+  if (idx === -1) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+  const parsed = patchTaskStatusSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
+    return;
+  }
+  tasks[idx] = { ...tasks[idx], status: parsed.data.status, updatedAt: new Date().toISOString() };
   res.json({ data: tasks[idx] });
 });
 

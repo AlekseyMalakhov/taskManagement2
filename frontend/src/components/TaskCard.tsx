@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
 import type { Task, Tag, TaskStatus } from '@task-app/shared'
-import { useUpdateTaskMutation } from '../store/api'
+import { usePatchTaskStatusMutation } from '../store/api'
 import { STATUS_LABEL, STATUS_CLASS, PRIORITY_LABEL, PRIORITY_CLASS, isOverdue } from '../lib/taskConstants'
 import TagSelectorPopup from './TagSelectorPopup'
 
@@ -14,20 +14,10 @@ interface Props {
 
 export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }: Props) {
   const overdue = isOverdue(task.deadline, task.status)
-  const [updateTask, { isLoading }] = useUpdateTaskMutation()
+  const [patchTaskStatus, { isLoading }] = usePatchTaskStatusMutation()
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    updateTask({
-      id: task.id,
-      body: {
-        title: task.title,
-        description: task.description,
-        status: e.target.value as TaskStatus,
-        priority: task.priority,
-        deadline: task.deadline,
-        tagIds: task.tags,
-      },
-    })
+    patchTaskStatus({ id: task.id, status: e.target.value as TaskStatus })
   }
 
   return (
