@@ -22,7 +22,7 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }:
 
   return (
     <Link
-      to={`/tasks/${task.id}`}
+      to={`/task/${task.id}`}
       className={[
         'block rounded-lg border bg-card p-5 shadow-sm transition-shadow hover:shadow-md',
         overdue ? 'border-l-4 border-l-red-500' : '',

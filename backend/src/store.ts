@@ -7,8 +7,6 @@ export const tags: Tag[] = [
   { id: "tag-4", name: "learning" },
 ];
 
-const now = new Date().toISOString();
-
 export const tasks: Task[] = [
   {
     id: "task-1",
@@ -18,8 +16,8 @@ export const tasks: Task[] = [
     priority: "high",
     deadline: "2026-05-01",
     tags: ["tag-1", "tag-3"],
-    createdAt: now,
-    updatedAt: now,
+    createdAt: "2026-01-15T09:23:00.000Z",
+    updatedAt: "2026-01-15T09:23:00.000Z",
   },
   {
     id: "task-2",
@@ -28,8 +26,8 @@ export const tasks: Task[] = [
     priority: "medium",
     deadline: "2026-05-15",
     tags: ["tag-4"],
-    createdAt: now,
-    updatedAt: now,
+    createdAt: "2026-02-03T14:05:00.000Z",
+    updatedAt: "2026-02-03T14:05:00.000Z",
   },
   {
     id: "task-3",
@@ -39,8 +37,8 @@ export const tasks: Task[] = [
     priority: "low",
     deadline: "2026-04-20",
     tags: ["tag-2"],
-    createdAt: now,
-    updatedAt: now,
+    createdAt: "2026-02-28T08:00:00.000Z",
+    updatedAt: "2026-02-28T08:00:00.000Z",
   },
   {
     id: "task-4",
@@ -50,8 +48,8 @@ export const tasks: Task[] = [
     priority: "high",
     deadline: "2026-04-25",
     tags: ["tag-1", "tag-3"],
-    createdAt: now,
-    updatedAt: now,
+    createdAt: "2026-03-20T11:47:00.000Z",
+    updatedAt: "2026-03-20T11:47:00.000Z",
   },
   {
     id: "task-5",
@@ -61,7 +59,7 @@ export const tasks: Task[] = [
     priority: "medium",
     deadline: "2026-05-10",
     tags: ["tag-1", "tag-4"],
-    createdAt: now,
-    updatedAt: now,
+    createdAt: "2026-04-07T16:30:00.000Z",
+    updatedAt: "2026-04-07T16:30:00.000Z",
   },
 ];
