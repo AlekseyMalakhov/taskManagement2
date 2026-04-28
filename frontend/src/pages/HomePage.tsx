@@ -1,19 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plus } from "lucide-react";
 import { useGetTagsQuery } from "../store/api";
 import { useFilteredTasks } from "../hooks/useFilteredTasks";
 import TaskCard from "../components/TaskCard";
 import type { Tag } from "@task-app/shared";
-import { Button } from "../components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../components/ui/dialog";
-import CreateTaskForm from "../components/CreateTaskForm";
+import CreateTaskDialog from "../components/CreateTaskDialog";
 import FilterPanel from "../components/FilterPanel";
 import SelectedTagsPanel from "../components/SelectedTagsPanel";
 
@@ -23,9 +14,8 @@ export default function HomePage() {
     () => new Set(searchParams.getAll("tag")),
     [searchParams],
   );
-  const { filteredTasks, isLoading: tasksLoading, isError: tasksError } = useFilteredTasks();
+  const { filteredTasks, isLoading, isError } = useFilteredTasks();
   const { data: tags } = useGetTagsQuery();
-  const [open, setOpen] = useState(false);
 
   function handleTagClick(tagId: string) {
     const next = new URLSearchParams(searchParams);
@@ -48,23 +38,7 @@ export default function HomePage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Tasks</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="size-4" />
-              New Task
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>New Task</DialogTitle>
-            </DialogHeader>
-            <CreateTaskForm
-              tags={tags ?? []}
-              onSuccess={() => setOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        <CreateTaskDialog tags={tags ?? []} />
       </div>
 
       <FilterPanel />
@@ -75,13 +49,13 @@ export default function HomePage() {
         onTagClick={handleTagClick}
       />
 
-      {tasksLoading && <p className="text-muted-foreground">Loading tasks…</p>}
-      {tasksError && (
+      {isLoading && <p className="text-muted-foreground">Loading tasks…</p>}
+      {isError && (
         <p className="text-destructive">
           Failed to load tasks. Is the backend running?
         </p>
       )}
-      {!tasksLoading && !tasksError && !filteredTasks?.length && (
+      {!isLoading && !isError && !filteredTasks?.length && (
         <p className="text-muted-foreground">No tasks yet.</p>
       )}
       {filteredTasks?.length ? (
