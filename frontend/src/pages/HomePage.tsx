@@ -8,9 +8,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import CreateTaskForm from '../components/CreateTaskForm'
 
 export default function HomePage() {
-  const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery()
+  const [selectedTagId, setSelectedTagId] = useState<string | undefined>(undefined)
+  const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery(
+    selectedTagId ? { tag: selectedTagId } : undefined
+  )
   const { data: tags } = useGetTagsQuery()
   const [open, setOpen] = useState(false)
+
+  function handleTagClick(tagId: string) {
+    setSelectedTagId((prev) => (prev === tagId ? undefined : tagId))
+  }
 
   const tagsById = useMemo(() => {
     const map = new Map<string, Tag>()
@@ -38,6 +45,19 @@ export default function HomePage() {
         </Dialog>
       </div>
 
+      {selectedTagId && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">Filtered by:</span>
+          <button
+            onClick={() => setSelectedTagId(undefined)}
+            className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium hover:bg-secondary/70"
+          >
+            {tagsById.get(selectedTagId)?.name ?? selectedTagId}
+            <span aria-hidden>×</span>
+          </button>
+        </div>
+      )}
+
       {tasksLoading && <p className="text-muted-foreground">Loading tasks…</p>}
       {tasksError && <p className="text-destructive">Failed to load tasks. Is the backend running?</p>}
       {!tasksLoading && !tasksError && !tasks?.length && (
@@ -46,7 +66,7 @@ export default function HomePage() {
       {tasks?.length ? (
         <div className="grid gap-3">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} tagsById={tagsById} />
+            <TaskCard key={task.id} task={task} tagsById={tagsById} onTagClick={handleTagClick} selectedTagId={selectedTagId} />
           ))}
         </div>
       ) : null}

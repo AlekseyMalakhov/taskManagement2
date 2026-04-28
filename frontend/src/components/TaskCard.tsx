@@ -7,9 +7,11 @@ import { STATUS_LABEL, STATUS_CLASS, PRIORITY_LABEL, PRIORITY_CLASS, isOverdue }
 interface Props {
   task: Task
   tagsById: Map<string, Tag>
+  onTagClick?: (tagId: string) => void
+  selectedTagId?: string
 }
 
-export default function TaskCard({ task, tagsById }: Props) {
+export default function TaskCard({ task, tagsById, onTagClick, selectedTagId }: Props) {
   const overdue = isOverdue(task.deadline, task.status)
   const [updateTask, { isLoading }] = useUpdateTaskMutation()
 
@@ -62,8 +64,19 @@ export default function TaskCard({ task, tagsById }: Props) {
           <div className="flex flex-wrap gap-1.5">
             {task.tags.map((tagId) => {
               const tag = tagsById.get(tagId)
+              const isSelected = selectedTagId === tagId
               return tag ? (
-                <span key={tagId} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs">
+                <span
+                  key={tagId}
+                  onClick={(e) => { e.preventDefault(); onTagClick?.(tagId) }}
+                  className={[
+                    'rounded-full px-2.5 py-0.5 text-xs transition-colors',
+                    onTagClick ? 'cursor-pointer' : '',
+                    isSelected
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary hover:bg-secondary/70',
+                  ].join(' ')}
+                >
                   {tag.name}
                 </span>
               ) : null
