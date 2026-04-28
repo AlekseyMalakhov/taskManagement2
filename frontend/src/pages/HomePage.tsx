@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { useGetTasksQuery, useGetTagsQuery } from "../store/api";
+import { useGetTagsQuery } from "../store/api";
+import { useFilteredTasks } from "../hooks/useFilteredTasks";
 import TaskCard from "../components/TaskCard";
-import type { Tag, TaskStatus, TaskPriority } from "@task-app/shared";
+import type { Tag } from "@task-app/shared";
 import { Button } from "../components/ui/button";
 import {
   Dialog,
@@ -22,25 +23,9 @@ export default function HomePage() {
     () => new Set(searchParams.getAll("tag")),
     [searchParams],
   );
-  const statusFilter = searchParams.get("status") as TaskStatus | null;
-  const priorityFilter = searchParams.get("priority") as TaskPriority | null;
-  const searchQuery = searchParams.get("search") ?? "";
-  const sortParam = searchParams.get("sort") ?? "createdAt_desc";
-
-  const {
-    data: tasks,
-    isLoading: tasksLoading,
-    isError: tasksError,
-  } = useGetTasksQuery();
+  const { filteredTasks, isLoading: tasksLoading, isError: tasksError } = useFilteredTasks();
   const { data: tags } = useGetTagsQuery();
   const [open, setOpen] = useState(false);
-
-  function updateParam(key: string, value: string) {
-    const next = new URLSearchParams(searchParams);
-    if (value) next.set(key, value);
-    else next.delete(key);
-    setSearchParams(next, { replace: true });
-  }
 
   function handleTagClick(tagId: string) {
     const next = new URLSearchParams(searchParams);
@@ -58,41 +43,6 @@ export default function HomePage() {
     tags?.forEach((tag) => map.set(tag.id, tag));
     return map;
   }, [tags]);
-
-  const filteredTasks = useMemo(() => {
-    if (!tasks) return tasks;
-    const q = searchQuery.toLowerCase();
-    const filtered = tasks.filter((t) => {
-      if (statusFilter && t.status !== statusFilter) return false;
-      if (priorityFilter && t.priority !== priorityFilter) return false;
-      if (
-        selectedTagIds.size > 0 &&
-        ![...selectedTagIds].every((id) => t.tags.includes(id))
-      )
-        return false;
-      if (q && !t.title.toLowerCase().includes(q)) return false;
-      return true;
-    });
-    if (!sortParam) return filtered;
-    return [...filtered].sort((a, b) => {
-      if (sortParam === "createdAt_asc")
-        return a.createdAt.localeCompare(b.createdAt);
-      if (sortParam === "createdAt_desc")
-        return b.createdAt.localeCompare(a.createdAt);
-      if (sortParam === "deadline_asc")
-        return a.deadline.localeCompare(b.deadline);
-      if (sortParam === "deadline_desc")
-        return b.deadline.localeCompare(a.deadline);
-      return 0;
-    });
-  }, [
-    tasks,
-    statusFilter,
-    priorityFilter,
-    selectedTagIds,
-    searchQuery,
-    sortParam,
-  ]);
 
   return (
     <div className="space-y-4">
@@ -117,13 +67,7 @@ export default function HomePage() {
         </Dialog>
       </div>
 
-      <FilterPanel
-        searchQuery={searchQuery}
-        statusFilter={statusFilter}
-        priorityFilter={priorityFilter}
-        sortParam={sortParam}
-        onParamChange={updateParam}
-      />
+      <FilterPanel />
 
       <SelectedTagsPanel
         selectedTagIds={selectedTagIds}
