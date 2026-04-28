@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronDown, Trash2 } from "lucide-react";
+import { ArrowLeft, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import {
   useGetTaskQuery,
   useGetTagsQuery,
@@ -15,6 +15,8 @@ import {
   PRIORITY_CLASS,
   isOverdue,
 } from "../lib/taskConstants";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import EditTaskForm from "../components/EditTaskForm";
 
 export default function TaskDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +26,7 @@ export default function TaskDetailsPage() {
   const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
   const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   async function handleDelete() {
     await deleteTask(id!);
@@ -148,7 +151,14 @@ export default function TaskDetailsPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1 text-sm font-medium hover:bg-secondary transition-colors"
+                >
+                  <Pencil className="size-3.5" />
+                  Edit
+                </button>
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   className="inline-flex items-center gap-1.5 rounded-md border border-destructive px-3 py-1 text-sm font-medium text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
@@ -157,6 +167,19 @@ export default function TaskDetailsPage() {
                   Delete
                 </button>
               </div>
+
+              <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Task</DialogTitle>
+                  </DialogHeader>
+                  <EditTaskForm
+                    task={task}
+                    tags={tags ?? []}
+                    onSuccess={() => setShowEditModal(false)}
+                  />
+                </DialogContent>
+              </Dialog>
             </>
           );
         })()}
