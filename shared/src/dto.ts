@@ -9,15 +9,6 @@ export interface CreateTaskDto {
   tagIds: string[];
 }
 
-export interface UpdateTaskDto {
-  title?: string;
-  description?: string;
-  status?: TaskStatus;
-  priority?: TaskPriority;
-  deadline?: string;
-  tagIds?: string[];
-}
-
 export interface CreateTagDto {
   name: string;
 }

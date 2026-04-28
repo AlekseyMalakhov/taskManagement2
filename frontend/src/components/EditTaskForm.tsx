@@ -3,14 +3,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
 import type { Tag, Task } from "@task-app/shared"
-import { updateTaskSchema } from "@task-app/shared"
+import { createTaskSchema } from "@task-app/shared"
 
 import { Button } from "./ui/button"
 import { DialogClose, DialogFooter } from "./ui/dialog"
 import { useUpdateTaskMutation } from "../store/api"
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from "../lib/taskConstants"
 
-type FormValues = z.infer<typeof updateTaskSchema>
+type FormValues = z.infer<typeof createTaskSchema>
 
 interface Props {
   task: Task
@@ -27,7 +27,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(updateTaskSchema),
+    resolver: zodResolver(createTaskSchema),
     defaultValues: {
       title: task.title,
       description: task.description ?? "",
@@ -41,7 +41,6 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
   const selectedTagIds = useWatch({
     control,
     name: "tagIds",
-    defaultValue: task.tags,
   })
 
   async function onSubmit(values: FormValues) {
@@ -50,10 +49,9 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
   }
 
   function toggleTag(tagId: string, checked: boolean) {
-    const current = selectedTagIds ?? []
     const next = checked
-      ? [...current, tagId]
-      : current.filter((id) => id !== tagId)
+      ? [...selectedTagIds, tagId]
+      : selectedTagIds.filter((id) => id !== tagId)
     setValue("tagIds", next, { shouldDirty: true, shouldValidate: true })
   }
 
@@ -137,7 +135,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
         <div className="max-h-32 space-y-2 overflow-y-auto rounded-md border p-3">
           {tags.length ? (
             tags.map((tag) => {
-              const checked = (selectedTagIds ?? []).includes(tag.id)
+              const checked = selectedTagIds.includes(tag.id)
               return (
                 <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm">
                   <Checkbox.Root
@@ -157,6 +155,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
             <p className="text-xs text-muted-foreground">No tags available.</p>
           )}
         </div>
+        {errors.tagIds && <p className="text-xs text-destructive">{errors.tagIds.message}</p>}
       </div>
 
       {isError && (

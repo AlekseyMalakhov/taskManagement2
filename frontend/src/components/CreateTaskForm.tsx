@@ -157,6 +157,7 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
             <p className="text-xs text-muted-foreground">No tags available.</p>
           )}
         </div>
+        {errors.tagIds && <p className="text-xs text-destructive">{errors.tagIds.message}</p>}
       </div>
 
       {isError && (

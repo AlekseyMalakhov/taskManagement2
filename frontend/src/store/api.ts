@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { Task, Tag } from "@task-app/shared";
-import type { CreateTaskDto, UpdateTaskDto, CreateTagDto } from "@task-app/shared";
+import type { CreateTaskDto, CreateTagDto } from "@task-app/shared";
 
 const rawBase = fetchBaseQuery({ baseUrl: "http://localhost:3000" });
 
@@ -38,8 +38,8 @@ export const api = createApi({
       query: (body) => ({ url: "/tasks", method: "POST", body }),
       invalidatesTags: ["Task"],
     }),
-    updateTask: builder.mutation<Task, { id: string; body: UpdateTaskDto }>({
-      query: ({ id, body }) => ({ url: `/tasks/${id}`, method: "PATCH", body }),
+    updateTask: builder.mutation<Task, { id: string; body: CreateTaskDto }>({
+      query: ({ id, body }) => ({ url: `/tasks/${id}`, method: "PUT", body }),
       invalidatesTags: (_result, _err, { id }) => ["Task", { type: "Task", id }],
     }),
     getTags: builder.query<Tag[], void>({

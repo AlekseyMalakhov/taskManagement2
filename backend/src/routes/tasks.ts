@@ -51,7 +51,7 @@ router.post("/", (req: Request, res: Response) => {
   res.status(201).json({ data: task });
 });
 
-router.patch("/:id", (req: Request, res: Response) => {
+router.put("/:id", (req: Request, res: Response) => {
   const idx = tasks.findIndex((t) => t.id === req.params.id);
   if (idx === -1) {
     res.status(404).json({ error: "Task not found" });
@@ -63,22 +63,21 @@ router.patch("/:id", (req: Request, res: Response) => {
     return;
   }
   const dto = parsed.data;
-  if (dto.tagIds) {
-    const unknownTags = dto.tagIds.filter((id) => !tags.find((t) => t.id === id));
-    if (unknownTags.length > 0) {
-      res.status(400).json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
-      return;
-    }
+  const unknownTags = dto.tagIds.filter((id) => !tags.find((t) => t.id === id));
+  if (unknownTags.length > 0) {
+    res.status(400).json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
+    return;
   }
   const existing = tasks[idx];
   tasks[idx] = {
-    ...existing,
-    ...(dto.title !== undefined && { title: dto.title }),
-    ...(dto.description !== undefined && { description: dto.description }),
-    ...(dto.status !== undefined && { status: dto.status }),
-    ...(dto.priority !== undefined && { priority: dto.priority }),
-    ...(dto.deadline !== undefined && { deadline: dto.deadline }),
-    ...(dto.tagIds !== undefined && { tags: dto.tagIds }),
+    id: existing.id,
+    createdAt: existing.createdAt,
+    title: dto.title,
+    description: dto.description,
+    status: dto.status,
+    priority: dto.priority,
+    deadline: dto.deadline,
+    tags: dto.tagIds,
     updatedAt: new Date().toISOString(),
   };
   res.json({ data: tasks[idx] });
