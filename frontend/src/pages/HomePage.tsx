@@ -14,6 +14,7 @@ export default function HomePage() {
   const selectedTagIds = useMemo(() => new Set(searchParams.getAll('tag')), [searchParams])
   const statusFilter = searchParams.get('status') as TaskStatus | null
   const priorityFilter = searchParams.get('priority') as TaskPriority | null
+  const searchQuery = searchParams.get('search') ?? ''
 
   const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery()
   const { data: tags } = useGetTagsQuery()
@@ -45,13 +46,15 @@ export default function HomePage() {
 
   const filteredTasks = useMemo(() => {
     if (!tasks) return tasks
+    const q = searchQuery.toLowerCase()
     return tasks.filter((t) => {
       if (statusFilter && t.status !== statusFilter) return false
       if (priorityFilter && t.priority !== priorityFilter) return false
       if (selectedTagIds.size > 0 && ![...selectedTagIds].every((id) => t.tags.includes(id))) return false
+      if (q && !t.title.toLowerCase().includes(q)) return false
       return true
     })
-  }, [tasks, statusFilter, priorityFilter, selectedTagIds])
+  }, [tasks, statusFilter, priorityFilter, selectedTagIds, searchQuery])
 
   return (
     <div className="space-y-4">
@@ -74,6 +77,13 @@ export default function HomePage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => updateParam('search', e.target.value)}
+          placeholder="Search tasks…"
+          className="rounded-md border bg-background px-3 py-1.5 text-sm outline-none"
+        />
         <select
           value={statusFilter ?? ''}
           onChange={(e) => updateParam('status', e.target.value)}
