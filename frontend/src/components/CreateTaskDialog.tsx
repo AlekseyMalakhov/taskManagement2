@@ -11,11 +11,11 @@ import {
 } from "./ui/dialog";
 import CreateTaskForm from "./CreateTaskForm";
 
-interface CreateTaskDialogProps {
+interface Props {
   tags: Tag[];
 }
 
-export default function CreateTaskDialog({ tags }: CreateTaskDialogProps) {
+export default function CreateTaskDialog({ tags }: Props) {
   const [open, setOpen] = useState(false);
 
   return (

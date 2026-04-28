@@ -19,3 +19,7 @@ import { createTaskSchema, updateTaskSchema, createTagSchema } from "@task-app/s
 When adding or modifying validation logic, always update the shared schema — never define duplicate schemas locally in backend or frontend.
 
 The `deadline` field is validated as a `YYYY-MM-DD` string that must be today or in the future.
+
+## React components
+
+Props interfaces or types for React components are always named `Props`.

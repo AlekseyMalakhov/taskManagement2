@@ -1,6 +1,6 @@
 import type { Tag } from "@task-app/shared";
 
-interface SelectedTagsPanelProps {
+interface Props {
   selectedTagIds: Set<string>;
   tagsById: Map<string, Tag>;
   onTagClick: (tagId: string) => void;
@@ -10,7 +10,7 @@ export default function SelectedTagsPanel({
   selectedTagIds,
   tagsById,
   onTagClick,
-}: SelectedTagsPanelProps) {
+}: Props) {
   if (selectedTagIds.size === 0) return null;
 
   return (
