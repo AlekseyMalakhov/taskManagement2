@@ -8,15 +8,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import CreateTaskForm from '../components/CreateTaskForm'
 
 export default function HomePage() {
-  const [selectedTagId, setSelectedTagId] = useState<string | undefined>(undefined)
-  const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery(
-    selectedTagId ? { tag: selectedTagId } : undefined
-  )
+  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set())
+  const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery()
   const { data: tags } = useGetTagsQuery()
   const [open, setOpen] = useState(false)
 
   function handleTagClick(tagId: string) {
-    setSelectedTagId((prev) => (prev === tagId ? undefined : tagId))
+    setSelectedTagIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(tagId)) next.delete(tagId)
+      else next.add(tagId)
+      return next
+    })
   }
 
   const tagsById = useMemo(() => {
@@ -24,6 +27,11 @@ export default function HomePage() {
     tags?.forEach((tag) => map.set(tag.id, tag))
     return map
   }, [tags])
+
+  const filteredTasks = useMemo(() => {
+    if (!tasks || selectedTagIds.size === 0) return tasks
+    return tasks.filter((t) => [...selectedTagIds].every((id) => t.tags.includes(id)))
+  }, [tasks, selectedTagIds])
 
   return (
     <div className="space-y-4">
@@ -45,28 +53,31 @@ export default function HomePage() {
         </Dialog>
       </div>
 
-      {selectedTagId && (
-        <div className="flex items-center gap-2 text-sm">
+      {selectedTagIds.size > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted-foreground">Filtered by:</span>
-          <button
-            onClick={() => setSelectedTagId(undefined)}
-            className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium hover:bg-secondary/70"
-          >
-            {tagsById.get(selectedTagId)?.name ?? selectedTagId}
-            <span aria-hidden>×</span>
-          </button>
+          {[...selectedTagIds].map((tagId) => (
+            <button
+              key={tagId}
+              onClick={() => handleTagClick(tagId)}
+              className="flex items-center gap-1 rounded-full bg-primary text-primary-foreground px-2.5 py-0.5 text-xs font-medium hover:bg-primary/80"
+            >
+              {tagsById.get(tagId)?.name ?? tagId}
+              <span aria-hidden>×</span>
+            </button>
+          ))}
         </div>
       )}
 
       {tasksLoading && <p className="text-muted-foreground">Loading tasks…</p>}
       {tasksError && <p className="text-destructive">Failed to load tasks. Is the backend running?</p>}
-      {!tasksLoading && !tasksError && !tasks?.length && (
+      {!tasksLoading && !tasksError && !filteredTasks?.length && (
         <p className="text-muted-foreground">No tasks yet.</p>
       )}
-      {tasks?.length ? (
+      {filteredTasks?.length ? (
         <div className="grid gap-3">
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} tagsById={tagsById} onTagClick={handleTagClick} selectedTagId={selectedTagId} />
+          {filteredTasks.map((task) => (
+            <TaskCard key={task.id} task={task} tagsById={tagsById} onTagClick={handleTagClick} selectedTagIds={selectedTagIds} />
           ))}
         </div>
       ) : null}

@@ -8,10 +8,10 @@ interface Props {
   task: Task
   tagsById: Map<string, Tag>
   onTagClick?: (tagId: string) => void
-  selectedTagId?: string
+  selectedTagIds?: Set<string>
 }
 
-export default function TaskCard({ task, tagsById, onTagClick, selectedTagId }: Props) {
+export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }: Props) {
   const overdue = isOverdue(task.deadline, task.status)
   const [updateTask, { isLoading }] = useUpdateTaskMutation()
 
@@ -64,7 +64,7 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagId }: 
           <div className="flex flex-wrap gap-1.5">
             {task.tags.map((tagId) => {
               const tag = tagsById.get(tagId)
-              const isSelected = selectedTagId === tagId
+              const isSelected = selectedTagIds?.has(tagId) ?? false
               return tag ? (
                 <span
                   key={tagId}
