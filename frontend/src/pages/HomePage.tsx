@@ -3,24 +3,38 @@ import { useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { useGetTasksQuery, useGetTagsQuery } from '../store/api'
 import TaskCard from '../components/TaskCard'
-import type { Tag } from '@task-app/shared'
+import type { Tag, TaskStatus, TaskPriority } from '@task-app/shared'
 import { Button } from '../components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
 import CreateTaskForm from '../components/CreateTaskForm'
+import { STATUS_LABEL, PRIORITY_LABEL } from '../lib/taskConstants'
 
 export default function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedTagIds = useMemo(() => new Set(searchParams.getAll('tag')), [searchParams])
+  const statusFilter = searchParams.get('status') as TaskStatus | null
+  const priorityFilter = searchParams.get('priority') as TaskPriority | null
+
   const { data: tasks, isLoading: tasksLoading, isError: tasksError } = useGetTasksQuery()
   const { data: tags } = useGetTagsQuery()
   const [open, setOpen] = useState(false)
 
+  function updateParam(key: string, value: string) {
+    const next = new URLSearchParams(searchParams)
+    if (value) next.set(key, value)
+    else next.delete(key)
+    setSearchParams(next, { replace: true })
+  }
+
   function handleTagClick(tagId: string) {
-    const current = searchParams.getAll('tag')
-    const next = current.includes(tagId)
+    const next = new URLSearchParams(searchParams)
+    const current = next.getAll('tag')
+    next.delete('tag')
+    const updated = current.includes(tagId)
       ? current.filter((id) => id !== tagId)
       : [...current, tagId]
-    setSearchParams(next.length > 0 ? { tag: next } : {}, { replace: true })
+    updated.forEach((id) => next.append('tag', id))
+    setSearchParams(next, { replace: true })
   }
 
   const tagsById = useMemo(() => {
@@ -30,9 +44,14 @@ export default function HomePage() {
   }, [tags])
 
   const filteredTasks = useMemo(() => {
-    if (!tasks || selectedTagIds.size === 0) return tasks
-    return tasks.filter((t) => [...selectedTagIds].every((id) => t.tags.includes(id)))
-  }, [tasks, selectedTagIds])
+    if (!tasks) return tasks
+    return tasks.filter((t) => {
+      if (statusFilter && t.status !== statusFilter) return false
+      if (priorityFilter && t.priority !== priorityFilter) return false
+      if (selectedTagIds.size > 0 && ![...selectedTagIds].every((id) => t.tags.includes(id))) return false
+      return true
+    })
+  }, [tasks, statusFilter, priorityFilter, selectedTagIds])
 
   return (
     <div className="space-y-4">
@@ -52,6 +71,30 @@ export default function HomePage() {
             <CreateTaskForm tags={tags ?? []} onSuccess={() => setOpen(false)} />
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <select
+          value={statusFilter ?? ''}
+          onChange={(e) => updateParam('status', e.target.value)}
+          className="rounded-md border bg-background px-3 py-1.5 text-sm outline-none"
+        >
+          <option value="">All statuses</option>
+          {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
+            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+          ))}
+        </select>
+
+        <select
+          value={priorityFilter ?? ''}
+          onChange={(e) => updateParam('priority', e.target.value)}
+          className="rounded-md border bg-background px-3 py-1.5 text-sm outline-none"
+        >
+          <option value="">All priorities</option>
+          {(Object.keys(PRIORITY_LABEL) as TaskPriority[]).map((p) => (
+            <option key={p} value={p}>{PRIORITY_LABEL[p]}</option>
+          ))}
+        </select>
       </div>
 
       {selectedTagIds.size > 0 && (
