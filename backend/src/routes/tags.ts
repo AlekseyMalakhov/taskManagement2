@@ -21,7 +21,7 @@ router.post("/", (req: Request, res: Response) => {
     res.status(400).json({ error: "A tag with this name already exists" });
     return;
   }
-  const tag: Tag = { id: crypto.randomUUID(), name };
+  const tag: Tag = { id: name.replace(/\s+/g, "-").toLowerCase(), name };
   tags.push(tag);
   res.status(201).json({ data: tag });
 });

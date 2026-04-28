@@ -17,6 +17,7 @@ import {
 } from "../lib/taskConstants";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import EditTaskForm from "../components/EditTaskForm";
+import TagSelectorPopup from "../components/TagSelectorPopup";
 
 export default function TaskDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -119,21 +120,20 @@ export default function TaskDetailsPage() {
                     </span>
                   </div>
 
-                  {taskTags.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <span className="w-24 shrink-0 font-medium">Tags</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {taskTags.map((tag) => (
-                          <span
-                            key={tag.id}
-                            className="rounded-full bg-secondary px-2.5 py-0.5 text-xs"
-                          >
-                            {tag.name}
-                          </span>
-                        ))}
-                      </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-24 shrink-0 font-medium">Tags</span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {taskTags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="rounded-full bg-secondary px-2.5 py-0.5 text-xs"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                      <TagSelectorPopup taskId={task.id} taskTagIds={task.tags} />
                     </div>
-                  )}
+                  </div>
 
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <span className="w-24 shrink-0 font-medium text-foreground">
