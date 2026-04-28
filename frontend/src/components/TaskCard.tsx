@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react'
 import type { Task, Tag, TaskStatus } from '@task-app/shared'
 import { useUpdateTaskMutation } from '../store/api'
 import { STATUS_LABEL, STATUS_CLASS, PRIORITY_LABEL, PRIORITY_CLASS, isOverdue } from '../lib/taskConstants'
+import TagSelectorPopup from './TagSelectorPopup'
 
 interface Props {
   task: Task
@@ -60,29 +61,28 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }:
           {overdue && ' · Overdue'}
         </span>
 
-        {task.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {task.tags.map((tagId) => {
-              const tag = tagsById.get(tagId)
-              const isSelected = selectedTagIds?.has(tagId) ?? false
-              return tag ? (
-                <span
-                  key={tagId}
-                  onClick={(e) => { e.preventDefault(); onTagClick?.(tagId) }}
-                  className={[
-                    'rounded-full px-2.5 py-0.5 text-xs transition-colors',
-                    onTagClick ? 'cursor-pointer' : '',
-                    isSelected
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary hover:bg-secondary/70',
-                  ].join(' ')}
-                >
-                  {tag.name}
-                </span>
-              ) : null
-            })}
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {task.tags.map((tagId) => {
+            const tag = tagsById.get(tagId)
+            const isSelected = selectedTagIds?.has(tagId) ?? false
+            return tag ? (
+              <span
+                key={tagId}
+                onClick={(e) => { e.preventDefault(); onTagClick?.(tagId) }}
+                className={[
+                  'rounded-full px-2.5 py-0.5 text-xs transition-colors',
+                  onTagClick ? 'cursor-pointer' : '',
+                  isSelected
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary hover:bg-secondary/70',
+                ].join(' ')}
+              >
+                {tag.name}
+              </span>
+            ) : null
+          })}
+          <TagSelectorPopup taskId={task.id} taskTagIds={task.tags} />
+        </div>
       </div>
     </Link>
   )
