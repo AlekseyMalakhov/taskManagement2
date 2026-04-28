@@ -131,7 +131,7 @@ export default function TaskDetailsPage() {
                           {tag.name}
                         </span>
                       ))}
-                      <TagSelectorPopup taskId={task.id} taskTagIds={task.tags} />
+                      <TagSelectorPopup task={task} />
                     </div>
                   </div>
 

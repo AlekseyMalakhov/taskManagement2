@@ -81,7 +81,7 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }:
               </span>
             ) : null
           })}
-          <TagSelectorPopup taskId={task.id} taskTagIds={task.tags} />
+          <TagSelectorPopup task={task} />
         </div>
       </div>
     </Link>
