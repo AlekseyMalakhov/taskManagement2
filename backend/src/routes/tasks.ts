@@ -84,4 +84,14 @@ router.patch("/:id", (req: Request, res: Response) => {
   res.json({ data: tasks[idx] });
 });
 
+router.delete("/:id", (req: Request, res: Response) => {
+  const idx = tasks.findIndex((t) => t.id === req.params.id);
+  if (idx === -1) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+  tasks.splice(idx, 1);
+  res.status(204).send();
+});
+
 export default router;

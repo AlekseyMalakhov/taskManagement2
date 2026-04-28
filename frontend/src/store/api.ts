@@ -46,6 +46,10 @@ export const api = createApi({
       query: () => "/tags",
       providesTags: ["Tag"],
     }),
+    deleteTask: builder.mutation<void, string>({
+      query: (id) => ({ url: `/tasks/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Task"],
+    }),
     createTag: builder.mutation<Tag, CreateTagDto>({
       query: (body) => ({ url: "/tags", method: "POST", body }),
       invalidatesTags: ["Tag"],
@@ -58,6 +62,7 @@ export const {
   useGetTaskQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
+  useDeleteTaskMutation,
   useGetTagsQuery,
   useCreateTagMutation,
 } = api;
