@@ -2,9 +2,10 @@ type Props = {
   onCancel: () => void;
   onConfirm: () => void;
   isDeleting: boolean;
+  isError: boolean;
 };
 
-export default function DeleteTaskModal({ onCancel, onConfirm, isDeleting }: Props) {
+export default function DeleteTaskModal({ onCancel, onConfirm, isDeleting, isError }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg">
@@ -12,6 +13,9 @@ export default function DeleteTaskModal({ onCancel, onConfirm, isDeleting }: Pro
         <p className="mt-2 text-sm text-muted-foreground">
           This action cannot be undone. The task will be permanently deleted.
         </p>
+        {isError && (
+          <p className="mt-2 text-sm text-destructive">Failed to delete task. Please try again.</p>
+        )}
         <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onCancel}

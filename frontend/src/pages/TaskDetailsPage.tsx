@@ -32,13 +32,14 @@ export default function TaskDetailsPage() {
   const { data: tags } = useGetTagsQuery();
   const [patchTaskStatus, { isLoading: isUpdating }] =
     usePatchTaskStatusMutation();
-  const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
+  const [deleteTask, { isLoading: isDeleting, isError: isDeleteError }] =
+    useDeleteTaskMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
   async function handleDelete() {
-    await deleteTask(id!);
-    navigate("/");
+    const result = await deleteTask(id!);
+    if (!("error" in result)) navigate("/");
   }
 
   const tagsById = useMemo(() => {
@@ -195,6 +196,7 @@ export default function TaskDetailsPage() {
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={handleDelete}
           isDeleting={isDeleting}
+          isError={isDeleteError}
         />
       )}
     </div>
