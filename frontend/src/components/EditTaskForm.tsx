@@ -7,6 +7,8 @@ import { createTaskSchema } from "@task-app/shared"
 
 import { Button } from "./ui/button"
 import { DialogClose, DialogFooter } from "./ui/dialog"
+import { Field, FieldContent, FieldLabel, FieldTitle } from "./ui/field"
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { useUpdateTaskMutation } from "../store/api"
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from "../lib/taskConstants"
 
@@ -81,40 +83,41 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1">
-          <label htmlFor="edit-status" className="text-sm font-medium">
-            Status
-          </label>
-          <select
-            id="edit-status"
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring/50"
-            {...register("status")}
-          >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="space-y-1">
+        <label htmlFor="edit-status" className="text-sm font-medium">
+          Status
+        </label>
+        <select
+          id="edit-status"
+          className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring/50"
+          {...register("status")}
+        >
+          {STATUS_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div className="space-y-1">
-          <label htmlFor="edit-priority" className="text-sm font-medium">
-            Priority
-          </label>
-          <select
-            id="edit-priority"
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring/50"
-            {...register("priority")}
-          >
-            {PRIORITY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Priority</p>
+        <RadioGroup
+          defaultValue={task.priority}
+          onValueChange={(value) => setValue("priority", value as FormValues["priority"], { shouldDirty: true, shouldValidate: true })}
+          className="flex gap-2"
+        >
+          {PRIORITY_OPTIONS.map((option) => (
+            <FieldLabel key={option.value} htmlFor={`edit-priority-${option.value}`} className="flex-1">
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldTitle>{option.label}</FieldTitle>
+                </FieldContent>
+                <RadioGroupItem value={option.value} id={`edit-priority-${option.value}`} />
+              </Field>
+            </FieldLabel>
+          ))}
+        </RadioGroup>
       </div>
 
       <div className="space-y-1">
