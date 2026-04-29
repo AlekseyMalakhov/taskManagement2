@@ -14,7 +14,7 @@ interface Props {
 
 export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }: Props) {
   const overdue = isOverdue(task.deadline, task.status)
-  const [patchTaskStatus, { isLoading }] = usePatchTaskStatusMutation()
+  const [patchTaskStatus, { isLoading, isError: isPatchError }] = usePatchTaskStatusMutation()
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
     patchTaskStatus({ id: task.id, status: e.target.value as TaskStatus })
@@ -50,6 +50,12 @@ export default function TaskCard({ task, tagsById, onTagClick, selectedTagIds }:
           </span>
         </div>
       </div>
+
+      {isPatchError && (
+        <div onClick={(e) => e.preventDefault()}>
+          <p className="mt-1 text-xs text-destructive">Failed to update status.</p>
+        </div>
+      )}
 
       {task.description && (
         <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{task.description}</p>

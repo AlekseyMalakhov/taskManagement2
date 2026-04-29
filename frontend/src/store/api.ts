@@ -1,15 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import type {
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+} from "@reduxjs/toolkit/query";
 import type { Task, Tag, TaskStatus } from "@task-app/shared";
-import type { CreateTaskDto, CreateTagDto, PatchTaskStatusDto } from "@task-app/shared";
+import type {
+  CreateTaskDto,
+  CreateTagDto,
+  PatchTaskStatusDto,
+} from "@task-app/shared";
 
 const rawBase = fetchBaseQuery({ baseUrl: "http://localhost:3000" });
 
-const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-  args,
-  api,
-  extraOptions,
-) => {
+const baseQuery: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
   const result = await rawBase(args, api, extraOptions);
   if (result.error) return result;
   if (result.data && typeof result.data === "object" && "data" in result.data) {
@@ -40,12 +48,20 @@ export const api = createApi({
     }),
     updateTask: builder.mutation<Task, { id: string; body: CreateTaskDto }>({
       query: ({ id, body }) => ({ url: `/tasks/${id}`, method: "PUT", body }),
-      invalidatesTags: (_result, _err, { id }) => ["Task", { type: "Task", id }],
+      invalidatesTags: (_result, error, { id }) =>
+        error ? [] : ["Task", { type: "Task", id }],
     }),
-    patchTaskStatus: builder.mutation<Task, { id: string; status: TaskStatus }>({
-      query: ({ id, status }) => ({ url: `/tasks/${id}/status`, method: "PATCH", body: { status } satisfies PatchTaskStatusDto }),
-      invalidatesTags: (_result, error, { id }) => error ? [] : ["Task", { type: "Task", id }],
-    }),
+    patchTaskStatus: builder.mutation<Task, { id: string; status: TaskStatus }>(
+      {
+        query: ({ id, status }) => ({
+          url: `/tasks/${id}/status`,
+          method: "PATCH",
+          body: { status } satisfies PatchTaskStatusDto,
+        }),
+        invalidatesTags: (_result, error, { id }) =>
+          error ? [] : ["Task", { type: "Task", id }],
+      },
+    ),
     getTags: builder.query<Tag[], void>({
       query: () => "/tags",
       providesTags: ["Tag"],

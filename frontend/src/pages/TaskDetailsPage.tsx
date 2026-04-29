@@ -112,11 +112,14 @@ export default function TaskDetailsPage() {
                         {PRIORITY_LABEL[task.priority]}
                       </span>
                     </div>
-                    {isPatchError && (
-                      <p className="text-xs text-destructive">Failed to update status.</p>
-                    )}
                   </div>
                 </div>
+
+                {isPatchError && (
+                  <p className="mt-1 text-sm text-destructive">
+                    Failed to update status.
+                  </p>
+                )}
 
                 {task.description && (
                   <p className="mt-4 text-muted-foreground whitespace-pre-wrap">
