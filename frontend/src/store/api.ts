@@ -44,7 +44,7 @@ export const api = createApi({
     }),
     patchTaskStatus: builder.mutation<Task, { id: string; status: TaskStatus }>({
       query: ({ id, status }) => ({ url: `/tasks/${id}/status`, method: "PATCH", body: { status } satisfies PatchTaskStatusDto }),
-      invalidatesTags: (_result, _err, { id }) => ["Task", { type: "Task", id }],
+      invalidatesTags: (_result, error, { id }) => error ? [] : ["Task", { type: "Task", id }],
     }),
     getTags: builder.query<Tag[], void>({
       query: () => "/tags",

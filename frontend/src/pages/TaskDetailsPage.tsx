@@ -30,7 +30,7 @@ export default function TaskDetailsPage() {
   const navigate = useNavigate();
   const { data: task, isLoading, isError } = useGetTaskQuery(id!);
   const { data: tags } = useGetTagsQuery();
-  const [patchTaskStatus, { isLoading: isUpdating }] =
+  const [patchTaskStatus, { isLoading: isUpdating, isError: isPatchError }] =
     usePatchTaskStatusMutation();
   const [deleteTask, { isLoading: isDeleting, isError: isDeleteError }] =
     useDeleteTaskMutation();
@@ -81,35 +81,40 @@ export default function TaskDetailsPage() {
                     {task.title}
                   </h1>
 
-                  <div className="flex shrink-0 flex-wrap items-center gap-2">
-                    <div className="relative flex items-center">
-                      <select
-                        value={task.status}
-                        onChange={(e) =>
-                          patchTaskStatus({
-                            id: task.id,
-                            status: e.target.value as TaskStatus,
-                          })
-                        }
-                        disabled={isUpdating}
-                        className={`appearance-none cursor-pointer rounded-md border py-1 pl-3 pr-7 text-sm font-medium outline-none transition-shadow hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${STATUS_CLASS[task.status]}`}
-                      >
-                        {(Object.keys(STATUS_LABEL) as TaskStatus[]).map(
-                          (s) => (
-                            <option key={s} value={s}>
-                              {STATUS_LABEL[s]}
-                            </option>
-                          ),
-                        )}
-                      </select>
-                      <ChevronDown className="pointer-events-none absolute right-2 size-3.5 opacity-50" />
-                    </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex items-center">
+                        <select
+                          value={task.status}
+                          onChange={(e) =>
+                            patchTaskStatus({
+                              id: task.id,
+                              status: e.target.value as TaskStatus,
+                            })
+                          }
+                          disabled={isUpdating}
+                          className={`appearance-none cursor-pointer rounded-md border py-1 pl-3 pr-7 text-sm font-medium outline-none transition-shadow hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${STATUS_CLASS[task.status]}`}
+                        >
+                          {(Object.keys(STATUS_LABEL) as TaskStatus[]).map(
+                            (s) => (
+                              <option key={s} value={s}>
+                                {STATUS_LABEL[s]}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-2 size-3.5 opacity-50" />
+                      </div>
 
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${PRIORITY_CLASS[task.priority]}`}
-                    >
-                      {PRIORITY_LABEL[task.priority]}
-                    </span>
+                      <span
+                        className={`rounded-full px-3 py-1 text-sm font-medium ${PRIORITY_CLASS[task.priority]}`}
+                      >
+                        {PRIORITY_LABEL[task.priority]}
+                      </span>
+                    </div>
+                    {isPatchError && (
+                      <p className="text-xs text-destructive">Failed to update status.</p>
+                    )}
                   </div>
                 </div>
 
