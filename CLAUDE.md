@@ -98,8 +98,14 @@ Returns: `{ filteredTasks, paginatedTasks, page, totalPages, isLoading, isError 
 | `FilterPanel` | Search, status, priority, sort dropdowns; resets `?page=` on change |
 | `SelectedTagsPanel` | Active tag filter chips; hidden when no tags selected |
 | `CreateTaskDialog` | "New Task" button + modal wrapping `CreateTaskForm` |
-| `CreateTaskForm` | React Hook Form + Zod; fields: title, description, status, priority, deadline, tags |
+| `CreateTaskForm` | React Hook Form + Zod; composes field components below; submits `POST` with `createTaskSchema` resolver |
 | `EditTaskForm` | Same as `CreateTaskForm`; pre-filled with current task values; submits full `PUT` with `createTaskSchema` resolver |
+| `TitleInput` | Labeled text input with error display; extends `ComponentPropsWithoutRef<"input">`; used in both forms |
+| `DescriptionInput` | Labeled textarea; extends `ComponentPropsWithoutRef<"textarea">`; used in both forms |
+| `StatusSelect` | Labeled select populated from `STATUS_OPTIONS`; extends `ComponentPropsWithoutRef<"select">`; used in both forms |
+| `PriorityRadioGroup` | Radix `RadioGroup` of priority options; props: `defaultValue`, `idPrefix`, `onValueChange`; used in both forms |
+| `DeadlineInput` | Labeled date input with error display; extends `ComponentPropsWithoutRef<"input">`; used in both forms |
+| `TagsSelector` | Scrollable checkbox list of tags; props: `tags`, `selectedTagIds`, `onToggle`, `error`; used in both forms |
 | `TagSelectorPopup` | Searchable tag list; toggle tags on a task; create new tag inline (Enter to submit) |
 | `Layout` | App shell with header |
 

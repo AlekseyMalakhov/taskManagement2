@@ -64,15 +64,13 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
       <TitleInput
-        id="title"
         error={errors.title?.message}
         {...register("title")}
       />
-      <DescriptionInput id="description" {...register("description")} />
-      <StatusSelect id="status" {...register("status")} />
+      <DescriptionInput {...register("description")} />
+      <StatusSelect {...register("status")} />
       <PriorityRadioGroup
         defaultValue="medium"
-        idPrefix="priority"
         onValueChange={(value) =>
           setValue("priority", value as FormValues["priority"], {
             shouldDirty: true,
@@ -81,7 +79,6 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
         }
       />
       <DeadlineInput
-        id="deadline"
         error={errors.deadline?.message}
         {...register("deadline")}
       />

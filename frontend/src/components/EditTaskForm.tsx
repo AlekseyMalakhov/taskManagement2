@@ -62,15 +62,13 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
       <TitleInput
-        id="edit-title"
         error={errors.title?.message}
         {...register("title")}
       />
-      <DescriptionInput id="edit-description" {...register("description")} />
-      <StatusSelect id="edit-status" {...register("status")} />
+      <DescriptionInput {...register("description")} />
+      <StatusSelect {...register("status")} />
       <PriorityRadioGroup
         defaultValue={task.priority}
-        idPrefix="edit-priority"
         onValueChange={(value) =>
           setValue("priority", value as FormValues["priority"], {
             shouldDirty: true,
@@ -79,7 +77,6 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
         }
       />
       <DeadlineInput
-        id="edit-deadline"
         error={errors.deadline?.message}
         {...register("deadline")}
       />
