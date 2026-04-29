@@ -1,4 +1,3 @@
-import { Checkbox } from "radix-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
@@ -11,6 +10,9 @@ import { Field, FieldContent, FieldLabel, FieldTitle } from "./ui/field"
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { useUpdateTaskMutation } from "../store/api"
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from "../lib/taskConstants"
+import TagsSelector from "./TagsSelector"
+import TitleInput from "./TitleInput"
+import DescriptionInput from "./DescriptionInput"
 
 type FormValues = z.infer<typeof createTaskSchema>
 
@@ -59,29 +61,9 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
-      <div className="space-y-1">
-        <label htmlFor="edit-title" className="text-sm font-medium">
-          Title
-        </label>
-        <input
-          id="edit-title"
-          type="text"
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring/50"
-          {...register("title")}
-        />
-        {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
-      </div>
+      <TitleInput id="edit-title" error={errors.title?.message} {...register("title")} />
 
-      <div className="space-y-1">
-        <label htmlFor="edit-description" className="text-sm font-medium">
-          Description
-        </label>
-        <textarea
-          id="edit-description"
-          className="min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring/50"
-          {...register("description")}
-        />
-      </div>
+      <DescriptionInput id="edit-description" {...register("description")} />
 
       <div className="space-y-1">
         <label htmlFor="edit-status" className="text-sm font-medium">
@@ -133,33 +115,12 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
         {errors.deadline && <p className="text-xs text-destructive">{errors.deadline.message}</p>}
       </div>
 
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Tags</p>
-        <div className="max-h-32 space-y-2 overflow-y-auto rounded-md border p-3">
-          {tags.length ? (
-            tags.map((tag) => {
-              const checked = selectedTagIds.includes(tag.id)
-              return (
-                <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm">
-                  <Checkbox.Root
-                    checked={checked}
-                    onCheckedChange={(value) => toggleTag(tag.id, value === true)}
-                    className="size-4 rounded border bg-background data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                  >
-                    <Checkbox.Indicator className="flex items-center justify-center text-xs">
-                      ✓
-                    </Checkbox.Indicator>
-                  </Checkbox.Root>
-                  <span>{tag.name}</span>
-                </label>
-              )
-            })
-          ) : (
-            <p className="text-xs text-muted-foreground">No tags available.</p>
-          )}
-        </div>
-        {errors.tagIds && <p className="text-xs text-destructive">{errors.tagIds.message}</p>}
-      </div>
+      <TagsSelector
+        tags={tags}
+        selectedTagIds={selectedTagIds}
+        onToggle={toggleTag}
+        error={errors.tagIds?.message}
+      />
 
       {isError && (
         <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
