@@ -97,13 +97,19 @@ Returns: `{ filteredTasks, paginatedTasks, page, totalPages, isLoading, isError 
 Components are organized into subfolders by domain:
 
 ```
-components/
-  Home/           — HomePage-specific components
-  TaskDetails/    — TaskDetailsPage-specific components
-  TaskForm/       — shared form field components + create/edit forms
-  ui/             — generic UI primitives
-  Layout.tsx      — app shell
-  TagSelectorPopup.tsx — shared, used in TaskDetails
+src/
+  pages/          — route-level page components (HomePage, TaskDetailsPage)
+  components/
+    Home/           — HomePage-specific components
+    TaskDetails/    — TaskDetailsPage-specific components
+    TaskForm/       — shared form field components + create/edit forms
+    ui/             — generic UI primitives
+    Layout.tsx      — app shell
+    TagSelectorPopup.tsx — shared, used in TaskDetails
+  hooks/          — custom hooks (useFilteredTasks)
+  store/          — Redux store + RTK Query API slice
+  lib/            — utilities and constants
+  test/           — global test setup (setup.ts)
 ```
 
 **`Home/`**
@@ -154,3 +160,14 @@ components/
 - Overdue tasks: red left border + red deadline text
 - Deadline display format: `DD/MM/YYYY` (split on `-`, reverse, join `/`)
 - Click handlers on tags inside `<Link>` elements use `e.stopPropagation()` to prevent navigation
+
+### Testing
+
+- Always use the `frontend-test-runner` agent to create and run frontend unit tests — never write or execute them directly.
+- **Runner**: Vitest 4.1.5, jsdom environment, globals enabled
+- **Libraries**: `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`
+- **Setup file**: `frontend/src/test/setup.ts` — imports `@testing-library/jest-dom`
+- **Config**: `vite.config.ts` imports `defineConfig` from `vitest/config` (not `vite`) to support the `test` field
+- **Run**: `bun run test` from `frontend/` (script: `vitest run`)
+- **Test file convention**: co-located with source — `ComponentName.test.tsx` / `util.test.ts`
+- **tsconfig types**: includes `vitest/globals` and `@testing-library/jest-dom`
