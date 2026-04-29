@@ -1,11 +1,11 @@
-import { useId, type ComponentPropsWithoutRef } from "react"
+import { useId, type ComponentPropsWithoutRef } from "react";
 
 interface Props extends ComponentPropsWithoutRef<"input"> {
-  error?: string
+  error?: string;
 }
 
 export default function DeadlineInput({ error, ...inputProps }: Props) {
-  const id = useId()
+  const id = useId();
   return (
     <div className="space-y-1">
       <label htmlFor={id} className="text-sm font-medium">
@@ -19,5 +19,5 @@ export default function DeadlineInput({ error, ...inputProps }: Props) {
       />
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
-  )
+  );
 }

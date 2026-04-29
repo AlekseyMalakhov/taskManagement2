@@ -15,16 +15,23 @@ import {
   PRIORITY_CLASS,
   isOverdue,
 } from "../lib/taskConstants";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
 import EditTaskForm from "../components/EditTaskForm";
 import TagSelectorPopup from "../components/TagSelectorPopup";
+import DeleteTaskModal from "../components/DeleteTaskModal";
 
 export default function TaskDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: task, isLoading, isError } = useGetTaskQuery(id!);
   const { data: tags } = useGetTagsQuery();
-  const [patchTaskStatus, { isLoading: isUpdating }] = usePatchTaskStatusMutation();
+  const [patchTaskStatus, { isLoading: isUpdating }] =
+    usePatchTaskStatusMutation();
   const [deleteTask, { isLoading: isDeleting }] = useDeleteTaskMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -78,7 +85,10 @@ export default function TaskDetailsPage() {
                       <select
                         value={task.status}
                         onChange={(e) =>
-                          patchTaskStatus({ id: task.id, status: e.target.value as TaskStatus })
+                          patchTaskStatus({
+                            id: task.id,
+                            status: e.target.value as TaskStatus,
+                          })
                         }
                         disabled={isUpdating}
                         className={`appearance-none cursor-pointer rounded-md border py-1 pl-3 pr-7 text-sm font-medium outline-none transition-shadow hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${STATUS_CLASS[task.status]}`}
@@ -112,7 +122,7 @@ export default function TaskDetailsPage() {
                   <div className="flex items-center gap-2">
                     <span className="w-24 shrink-0 font-medium">Deadline</span>
                     <span className={overdue ? "font-medium text-red-600" : ""}>
-                      {task.deadline.split('-').reverse().join('/')}
+                      {task.deadline.split("-").reverse().join("/")}
                       {overdue && " · Overdue"}
                     </span>
                   </div>
@@ -136,14 +146,14 @@ export default function TaskDetailsPage() {
                     <span className="w-24 shrink-0 font-medium text-foreground">
                       Created
                     </span>
-                    {new Date(task.createdAt).toLocaleString('en-GB')}
+                    {new Date(task.createdAt).toLocaleString("en-GB")}
                   </div>
 
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <span className="w-24 shrink-0 font-medium text-foreground">
                       Updated
                     </span>
-                    {new Date(task.updatedAt).toLocaleString('en-GB')}
+                    {new Date(task.updatedAt).toLocaleString("en-GB")}
                   </div>
                 </div>
               </div>
@@ -181,31 +191,11 @@ export default function TaskDetailsPage() {
           );
         })()}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg">
-            <h2 className="text-lg font-semibold">Delete task?</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              This action cannot be undone. The task will be permanently
-              deleted.
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                disabled={isDeleting}
-                className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors disabled:opacity-50"
-              >
-                {isDeleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteTaskModal
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+          isDeleting={isDeleting}
+        />
       )}
     </div>
   );

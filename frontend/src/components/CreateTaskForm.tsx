@@ -55,10 +55,7 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
-      <TitleInput
-        error={errors.title?.message}
-        {...register("title")}
-      />
+      <TitleInput error={errors.title?.message} {...register("title")} />
       <DescriptionInput {...register("description")} />
       <StatusSelect {...register("status")} />
       <PriorityRadioGroup
@@ -77,7 +74,9 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
       <TagsSelector
         tags={tags}
         selectedTagIds={selectedTagIds}
-        onToggle={(next) => setValue("tagIds", next, { shouldDirty: true, shouldValidate: true })}
+        onToggle={(next) =>
+          setValue("tagIds", next, { shouldDirty: true, shouldValidate: true })
+        }
         error={errors.tagIds?.message}
       />
       {isError && (
