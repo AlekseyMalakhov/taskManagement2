@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useGetTagsQuery } from "../store/api";
+import { useGetTagsQuery } from "@/store/api";
 import type { Tag } from "@task-app/shared";
-import CreateTaskDialog from "../components/CreateTaskDialog";
-import FilterPanel from "../components/FilterPanel";
-import SelectedTagsPanel from "../components/SelectedTagsPanel";
-import TasksList from "../components/TasksList";
+import CreateTaskDialog from "@/components/TaskForm/CreateTaskDialog";
+import FilterPanel from "@/components/Home/FilterPanel";
+import SelectedTagsPanel from "@/components/Home/SelectedTagsPanel";
+import TasksList from "@/components/Home/TasksList";
 
 export default function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();

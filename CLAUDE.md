@@ -18,11 +18,12 @@ Root scripts: `dev:frontend`, `dev:backend`, `typecheck`
 - `Task` — `{ id, title, description?, status, priority, deadline, tags: string[], createdAt, updatedAt }`
 - `Tag` — `{ id, name }`
 
-**DTOs** (`shared/src/dto.ts`): `CreateTaskDto`, `CreateTagDto`
+**DTOs** (`shared/src/dto.ts`): `CreateTaskDto`, `PatchTaskStatusDto`, `CreateTagDto`
 
 - `CreateTaskDto` is used for both create and update — there is no separate `UpdateTaskDto`
+- `PatchTaskStatusDto` — `{ status: TaskStatus }` — used for the status-only patch endpoint
 
-**Validation** (`shared/src/validation.ts`): `createTaskSchema`, `updateTaskSchema`, `createTagSchema`
+**Validation** (`shared/src/validation.ts`): `createTaskSchema`, `updateTaskSchema`, `patchTaskStatusSchema`, `createTagSchema`
 
 All Zod schemas live in `shared/src/validation.ts` and are exported from `shared/src/index.ts`. Both backend and frontend import from `@task-app/shared` — never define duplicate schemas locally.
 
@@ -36,6 +37,8 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 
 `updateTaskSchema = createTaskSchema.extend({ deadline })` — identical to `createTaskSchema` except `deadline` only validates format (`YYYY-MM-DD`), **not** that it is in the future. This allows editing tasks that already have a past deadline.
 
+`patchTaskStatusSchema` — `{ status: z.enum([...]) }` — used for the status-only PATCH endpoint.
+
 ## Backend
 
 - Express on `process.env.PORT` (default 3000), CORS for `http://localhost:5173`
@@ -47,6 +50,7 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 - `GET /tasks/:id` — single task (404 if missing)
 - `POST /tasks` — create; validates with `createTaskSchema`; returns 201
 - `PUT /tasks/:id` — full replace; validates with `updateTaskSchema`; preserves `id` and `createdAt`
+- `PATCH /tasks/:id/status` — status-only update; validates with `patchTaskStatusSchema`; returns updated task
 - `DELETE /tasks/:id` — 204 No Content
 
 **Tags** (`/tags`):
@@ -60,7 +64,7 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 ### State management
 
 - Redux store: `frontend/src/store/store.ts`
-- RTK Query API: `frontend/src/store/api.ts` — endpoints: `getTasks`, `getTask`, `getTags`, `createTask`, `updateTask`, `deleteTask`, `createTag`
+- RTK Query API: `frontend/src/store/api.ts` — endpoints: `getTasks`, `getTask`, `getTags`, `createTask`, `updateTask`, `patchTaskStatus`, `deleteTask`, `createTag`
 - RTK Query's `baseQuery` unwraps the `{ data }` envelope automatically
 - Filtering and pagination are **client-side** — `getTasks` fetches all tasks, `useFilteredTasks` does the rest
 
@@ -86,9 +90,23 @@ Returns: `{ filteredTasks, paginatedTasks, page, totalPages, isLoading, isError 
 ### Pages
 
 - **`HomePage`** (`/`) — filter panel, tag filter panel, task list with pagination. `handleTagClick` toggles `?tag=` and resets `?page=`.
-- **`TaskDetailsPage`** (`/task/:id`) — full task view; inline status/priority dropdowns; edit modal (`EditTaskForm`); delete with confirmation; overdue indicator; dates formatted as DD/MM/YYYY (en-GB).
+- **`TaskDetailsPage`** (`/task/:id`) — full task view composed of `TaskDetailsBody` + `TaskDetailsFooter`; uses `usePatchTaskStatusMutation` for inline status changes.
 
 ### Components
+
+Components are organized into subfolders by domain:
+
+```
+components/
+  Home/           — HomePage-specific components
+  TaskDetails/    — TaskDetailsPage-specific components
+  TaskForm/       — shared form field components + create/edit forms
+  ui/             — generic UI primitives
+  Layout.tsx      — app shell
+  TagSelectorPopup.tsx — shared, used in TaskDetails
+```
+
+**`Home/`**
 
 | Component | Responsibility |
 |---|---|
@@ -97,19 +115,30 @@ Returns: `{ filteredTasks, paginatedTasks, page, totalPages, isLoading, isError 
 | `Pagination` | Previous/Next + smart page numbers with ellipsis; manages `?page=` param internally; renders `null` when `totalPages ≤ 1` |
 | `FilterPanel` | Search, status, priority, sort dropdowns; resets `?page=` on change |
 | `SelectedTagsPanel` | Active tag filter chips; hidden when no tags selected |
+
+**`TaskDetails/`**
+
+| Component | Responsibility |
+|---|---|
+| `TaskDetailsBody` | Task detail card: title, inline status dropdown (`patchTaskStatus`), priority badge, description, deadline, tags via `TagSelectorPopup`, created/updated timestamps |
+| `TaskDetailsFooter` | Edit/Delete button bar; owns edit modal (`EditTaskForm`) and delete modal (`DeleteTaskModal`); navigates to `/` after successful delete |
+| `DeleteTaskModal` | Confirmation modal for task deletion; shows error state; props: `onCancel`, `onConfirm`, `isDeleting`, `isError` |
+
+**`TaskForm/`**
+
+| Component | Responsibility |
+|---|---|
 | `CreateTaskDialog` | "New Task" button + modal wrapping `CreateTaskForm` |
 | `CreateTaskForm` | React Hook Form + Zod; composes field components below; submits `POST` with `createTaskSchema` resolver |
 | `EditTaskForm` | Same as `CreateTaskForm`; pre-filled with current task values; submits full `PUT` with `createTaskSchema` resolver |
-| `TitleInput` | Labeled text input with error display; extends `ComponentPropsWithoutRef<"input">`; used in both forms |
-| `DescriptionInput` | Labeled textarea; extends `ComponentPropsWithoutRef<"textarea">`; used in both forms |
-| `StatusSelect` | Labeled select populated from `STATUS_OPTIONS`; extends `ComponentPropsWithoutRef<"select">`; used in both forms |
-| `PriorityRadioGroup` | Radix `RadioGroup` of priority options; props: `defaultValue`, `idPrefix`, `onValueChange`; used in both forms |
-| `DeadlineInput` | Labeled date input with error display; extends `ComponentPropsWithoutRef<"input">`; used in both forms |
-| `TagsSelector` | Scrollable checkbox list of tags; props: `tags`, `selectedTagIds`, `onToggle`, `error`; used in both forms |
-| `TagSelectorPopup` | Searchable tag list; toggle tags on a task; create new tag inline (Enter to submit) |
-| `Layout` | App shell with header |
+| `TitleInput` | Labeled text input with error display; extends `ComponentPropsWithoutRef<"input">` |
+| `DescriptionInput` | Labeled textarea; extends `ComponentPropsWithoutRef<"textarea">` |
+| `StatusSelect` | Labeled select populated from `STATUS_OPTIONS`; extends `ComponentPropsWithoutRef<"select">` |
+| `PriorityRadioGroup` | Radix `RadioGroup` of priority options; props: `defaultValue`, `idPrefix`, `onValueChange` |
+| `DeadlineInput` | Labeled date input with error display; extends `ComponentPropsWithoutRef<"input">` |
+| `TagsSelector` | Scrollable checkbox list of tags; props: `tags`, `selectedTagIds`, `onToggle`, `error` |
 
-**UI primitives** (`frontend/src/components/ui/`): `button.tsx` (CVA variants: default, outline, secondary, ghost, destructive, link), `dialog.tsx` (Radix UI wrapper)
+**UI primitives** (`frontend/src/components/ui/`): `button.tsx` (CVA variants: default, outline, secondary, ghost, destructive, link), `dialog.tsx` (Radix UI wrapper), `label.tsx`, `separator.tsx`, `radio-group.tsx`, `field.tsx` (field composition: `Field`, `FieldLabel`, `FieldError`, `FieldGroup`, `FieldSet`, `FieldLegend`, `FieldContent`, `FieldTitle`, `FieldDescription`, `FieldSeparator`)
 
 ### Utilities (`frontend/src/lib/`)
 

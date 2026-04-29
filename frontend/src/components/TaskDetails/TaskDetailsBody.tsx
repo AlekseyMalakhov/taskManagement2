@@ -6,8 +6,8 @@ import {
   PRIORITY_LABEL,
   PRIORITY_CLASS,
   isOverdue,
-} from "../lib/taskConstants";
-import TagSelectorPopup from "./TagSelectorPopup";
+} from "../../lib/taskConstants";
+import TagSelectorPopup from "../TagSelectorPopup";
 
 type Props = {
   task: Task;

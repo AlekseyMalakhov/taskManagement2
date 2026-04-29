@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import type { Tag } from "@task-app/shared";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "@/components/ui/dialog";
 import CreateTaskForm from "./CreateTaskForm";
 
 interface Props {

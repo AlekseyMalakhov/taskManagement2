@@ -4,9 +4,9 @@ import {
   useGetTaskQuery,
   useGetTagsQuery,
   usePatchTaskStatusMutation,
-} from "../store/api";
-import TaskDetailsBody from "@/components/TaskDetailsBody";
-import TaskDetailsFooter from "@/components/TaskDetailsFooter";
+} from "@/store/api";
+import TaskDetailsBody from "@/components/TaskDetails/TaskDetailsBody";
+import TaskDetailsFooter from "@/components/TaskDetails/TaskDetailsFooter";
 
 export default function TaskDetailsPage() {
   const { id } = useParams();
@@ -29,16 +29,18 @@ export default function TaskDetailsPage() {
       {isError && <p className="text-destructive">Failed to load task.</p>}
 
       {task && (
-        <TaskDetailsBody
-          task={task}
-          tags={tags ?? []}
-          isUpdating={isUpdating}
-          isPatchError={isPatchError}
-          patchTaskStatus={patchTaskStatus}
-        />
-      )}
+        <>
+          <TaskDetailsBody
+            task={task}
+            tags={tags ?? []}
+            isUpdating={isUpdating}
+            isPatchError={isPatchError}
+            patchTaskStatus={patchTaskStatus}
+          />
 
-      <TaskDetailsFooter task={task} tags={tags} id={id} />
+          <TaskDetailsFooter task={task} tags={tags} id={id} />
+        </>
+      )}
     </div>
   );
 }

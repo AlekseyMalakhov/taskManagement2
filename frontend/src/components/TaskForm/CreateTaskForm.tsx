@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-import type { Tag, Task } from "@task-app/shared";
+import type { Tag } from "@task-app/shared";
 import { createTaskSchema } from "@task-app/shared";
 
-import { Button } from "./ui/button";
-import { DialogClose, DialogFooter } from "./ui/dialog";
-import { useUpdateTaskMutation } from "../store/api";
+import { Button } from "@/components/ui/button";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { useCreateTaskMutation } from "@/store/api";
 import TagsSelector from "./TagsSelector";
 import TitleInput from "./TitleInput";
 import DescriptionInput from "./DescriptionInput";
@@ -17,28 +17,28 @@ import DeadlineInput from "./DeadlineInput";
 type FormValues = z.infer<typeof createTaskSchema>;
 
 interface Props {
-  task: Task;
   tags: Tag[];
   onSuccess: () => void;
 }
 
-export default function EditTaskForm({ task, tags, onSuccess }: Props) {
-  const [updateTask, { isLoading, isError }] = useUpdateTaskMutation();
+export default function CreateTaskForm({ tags, onSuccess }: Props) {
+  const [createTask, { isLoading, isError }] = useCreateTaskMutation();
   const {
     control,
     register,
     handleSubmit,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
-      title: task.title,
-      description: task.description ?? "",
-      status: task.status,
-      priority: task.priority,
-      deadline: task.deadline,
-      tagIds: task.tags,
+      title: "",
+      description: "",
+      status: "todo",
+      priority: "medium",
+      deadline: "",
+      tagIds: [],
     },
   });
 
@@ -48,7 +48,8 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
   });
 
   async function onSubmit(values: FormValues) {
-    await updateTask({ id: task.id, body: values }).unwrap();
+    await createTask(values).unwrap();
+    reset();
     onSuccess();
   }
 
@@ -58,7 +59,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
       <DescriptionInput {...register("description")} />
       <StatusSelect {...register("status")} />
       <PriorityRadioGroup
-        defaultValue={task.priority}
+        defaultValue="medium"
         onValueChange={(value) =>
           setValue("priority", value as FormValues["priority"], {
             shouldDirty: true,
@@ -80,7 +81,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
       />
       {isError && (
         <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          Failed to update task. Please try again.
+          Failed to create task. Please try again.
         </div>
       )}
       <DialogFooter>
@@ -90,7 +91,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
           </Button>
         </DialogClose>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : "Save Changes"}
+          {isLoading ? "Creating..." : "Create Task"}
         </Button>
       </DialogFooter>
     </form>

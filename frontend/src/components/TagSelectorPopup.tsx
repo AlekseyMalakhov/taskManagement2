@@ -5,7 +5,7 @@ import {
   useGetTagsQuery,
   useCreateTagMutation,
   useUpdateTaskMutation,
-} from "../store/api";
+} from "@/store/api";
 
 interface Props {
   task: Task;

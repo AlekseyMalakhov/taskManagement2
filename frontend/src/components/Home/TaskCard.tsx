@@ -1,0 +1,121 @@
+import { Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
+import type { Task, Tag, TaskStatus } from "@task-app/shared";
+import { usePatchTaskStatusMutation } from "@/store/api";
+import {
+  STATUS_LABEL,
+  STATUS_CLASS,
+  PRIORITY_LABEL,
+  PRIORITY_CLASS,
+  isOverdue,
+} from "../../lib/taskConstants";
+import TagSelectorPopup from "../TagSelectorPopup";
+
+interface Props {
+  task: Task;
+  tagsById: Map<string, Tag>;
+  onTagClick?: (tagId: string) => void;
+  selectedTagIds?: Set<string>;
+}
+
+export default function TaskCard({
+  task,
+  tagsById,
+  onTagClick,
+  selectedTagIds,
+}: Props) {
+  const overdue = isOverdue(task.deadline, task.status);
+  const [patchTaskStatus, { isLoading, isError: isPatchError }] =
+    usePatchTaskStatusMutation();
+
+  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    patchTaskStatus({ id: task.id, status: e.target.value as TaskStatus });
+  }
+
+  return (
+    <Link
+      to={`/task/${task.id}`}
+      className={[
+        "block rounded-lg border bg-card p-5 shadow-sm transition-shadow hover:shadow-md",
+        overdue ? "border-l-4 border-l-red-500" : "",
+      ].join(" ")}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <h2 className="font-semibold leading-snug">{task.title}</h2>
+        <div className="flex shrink-0 gap-2">
+          {/* stop click from triggering the Link navigation */}
+          <div
+            onClick={(e) => e.preventDefault()}
+            className="relative flex items-center"
+          >
+            <select
+              value={task.status}
+              onChange={handleStatusChange}
+              disabled={isLoading}
+              className={`appearance-none cursor-pointer rounded-md border py-0.5 pl-2.5 pr-6 text-xs font-medium outline-none transition-shadow hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${STATUS_CLASS[task.status]}`}
+            >
+              {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABEL[s]}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-1.5 h-3 w-3 opacity-50" />
+          </div>
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${PRIORITY_CLASS[task.priority]}`}
+          >
+            {PRIORITY_LABEL[task.priority]}
+          </span>
+        </div>
+      </div>
+
+      {isPatchError && (
+        <div onClick={(e) => e.preventDefault()}>
+          <p className="mt-1 text-xs text-destructive">
+            Failed to update status.
+          </p>
+        </div>
+      )}
+
+      {task.description && (
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+          {task.description}
+        </p>
+      )}
+
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <span className={overdue ? "font-medium text-red-600" : ""}>
+          Due {task.deadline.split("-").reverse().join("/")}
+          {overdue && " · Overdue"}
+        </span>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {task.tags.map((tagId) => {
+            const tag = tagsById.get(tagId);
+            const isSelected = selectedTagIds?.has(tagId) ?? false;
+            return tag ? (
+              <span
+                key={tagId}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTagClick?.(tagId);
+                }}
+                className={[
+                  "rounded-full px-2.5 py-0.5 text-xs transition-colors",
+                  onTagClick ? "cursor-pointer" : "",
+                  isSelected
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary hover:bg-secondary/70",
+                ].join(" ")}
+              >
+                {tag.name}
+              </span>
+            ) : null;
+          })}
+          <TagSelectorPopup task={task} />
+        </div>
+      </div>
+    </Link>
+  );
+}

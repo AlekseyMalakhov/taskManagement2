@@ -1,5 +1,5 @@
 import type { Tag } from "@task-app/shared";
-import { useFilteredTasks } from "../hooks/useFilteredTasks";
+import { useFilteredTasks } from "@/hooks/useFilteredTasks";
 import Pagination from "./Pagination";
 import TaskCard from "./TaskCard";
 
@@ -14,8 +14,14 @@ export default function TasksList({
   selectedTagIds,
   onTagClick,
 }: Props) {
-  const { filteredTasks, paginatedTasks, page, totalPages, isLoading, isError } =
-    useFilteredTasks();
+  const {
+    filteredTasks,
+    paginatedTasks,
+    page,
+    totalPages,
+    isLoading,
+    isError,
+  } = useFilteredTasks();
 
   if (isLoading) return <p className="text-muted-foreground">Loading tasks…</p>;
   if (isError)

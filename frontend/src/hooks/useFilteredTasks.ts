@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useGetTasksQuery } from "../store/api";
+import { useGetTasksQuery } from "@/store/api";
 import type { TaskStatus, TaskPriority } from "@task-app/shared";
 
 export const PAGE_SIZE = 10;
@@ -45,11 +45,34 @@ export function useFilteredTasks() {
         return b.deadline.localeCompare(a.deadline);
       return 0;
     });
-  }, [tasks, statusFilter, priorityFilter, selectedTagIds, searchQuery, sortParam]);
+  }, [
+    tasks,
+    statusFilter,
+    priorityFilter,
+    selectedTagIds,
+    searchQuery,
+    sortParam,
+  ]);
 
-  const totalPages = Math.max(1, Math.ceil((filteredTasks?.length ?? 0) / PAGE_SIZE));
-  const page = Math.min(Math.max(1, isNaN(pageParam) ? 1 : pageParam), totalPages);
-  const paginatedTasks = filteredTasks?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(
+    1,
+    Math.ceil((filteredTasks?.length ?? 0) / PAGE_SIZE),
+  );
+  const page = Math.min(
+    Math.max(1, isNaN(pageParam) ? 1 : pageParam),
+    totalPages,
+  );
+  const paginatedTasks = filteredTasks?.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
 
-  return { filteredTasks, paginatedTasks, page, totalPages, isLoading, isError };
+  return {
+    filteredTasks,
+    paginatedTasks,
+    page,
+    totalPages,
+    isLoading,
+    isError,
+  };
 }

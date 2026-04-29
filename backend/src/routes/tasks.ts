@@ -2,15 +2,20 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import type { Task } from "@task-app/shared";
 import { tasks, tags } from "../store";
-import { createTaskSchema, updateTaskSchema, patchTaskStatusSchema } from "@task-app/shared";
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  patchTaskStatusSchema,
+} from "@task-app/shared";
 
 const router = Router();
 
 router.get("/", (req: Request, res: Response) => {
   const { tag } = req.query;
-  const result = typeof tag === "string" && tag
-    ? tasks.filter((t) => t.tags.includes(tag))
-    : tasks;
+  const result =
+    typeof tag === "string" && tag
+      ? tasks.filter((t) => t.tags.includes(tag))
+      : tasks;
   res.json({ data: result });
 });
 
@@ -32,7 +37,9 @@ router.post("/", (req: Request, res: Response) => {
   const dto = parsed.data;
   const unknownTags = dto.tagIds.filter((id) => !tags.find((t) => t.id === id));
   if (unknownTags.length > 0) {
-    res.status(400).json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
+    res
+      .status(400)
+      .json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
     return;
   }
   const now = new Date().toISOString();
@@ -65,7 +72,9 @@ router.put("/:id", (req: Request, res: Response) => {
   const dto = parsed.data;
   const unknownTags = dto.tagIds.filter((id) => !tags.find((t) => t.id === id));
   if (unknownTags.length > 0) {
-    res.status(400).json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
+    res
+      .status(400)
+      .json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
     return;
   }
   const existing = tasks[idx];
@@ -94,7 +103,11 @@ router.patch("/:id/status", (req: Request, res: Response) => {
     res.status(400).json({ error: parsed.error.flatten().fieldErrors });
     return;
   }
-  tasks[idx] = { ...tasks[idx], status: parsed.data.status, updatedAt: new Date().toISOString() };
+  tasks[idx] = {
+    ...tasks[idx],
+    status: parsed.data.status,
+    updatedAt: new Date().toISOString(),
+  };
   res.json({ data: tasks[idx] });
 });
 

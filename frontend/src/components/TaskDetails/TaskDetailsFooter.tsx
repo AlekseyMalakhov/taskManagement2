@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Tag, Task } from "@task-app/shared";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import EditTaskForm from "./EditTaskForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import EditTaskForm from "../TaskForm/EditTaskForm";
 import DeleteTaskModal from "./DeleteTaskModal";
 import { useDeleteTaskMutation } from "@/store/api";
 import { useNavigate } from "react-router-dom";

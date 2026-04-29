@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import type { TaskStatus, TaskPriority } from "@task-app/shared";
-import { STATUS_LABEL, PRIORITY_LABEL } from "../lib/taskConstants";
+import { STATUS_LABEL, PRIORITY_LABEL } from "../../lib/taskConstants";
 
 export default function FilterPanel() {
   const [searchParams, setSearchParams] = useSearchParams();

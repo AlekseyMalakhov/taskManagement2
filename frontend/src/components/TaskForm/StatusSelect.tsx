@@ -1,10 +1,10 @@
-import { useId, type ComponentPropsWithoutRef } from "react"
-import { STATUS_OPTIONS } from "../lib/taskConstants"
+import { useId, type ComponentPropsWithoutRef } from "react";
+import { STATUS_OPTIONS } from "../../lib/taskConstants";
 
-type Props = ComponentPropsWithoutRef<"select">
+type Props = ComponentPropsWithoutRef<"select">;
 
 export default function StatusSelect(selectProps: Props) {
-  const id = useId()
+  const id = useId();
   return (
     <div className="space-y-1">
       <label htmlFor={id} className="text-sm font-medium">
@@ -22,5 +22,5 @@ export default function StatusSelect(selectProps: Props) {
         ))}
       </select>
     </div>
-  )
+  );
 }
