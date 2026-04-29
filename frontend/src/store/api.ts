@@ -28,7 +28,7 @@ export const api = createApi({
         url: "/tasks",
         ...(params ? { params } : {}),
       }),
-      providesTags: ["Task"],
+      providesTags: [{ type: "Task", id: "LIST" }],
     }),
     getTask: builder.query<Task, string>({
       query: (id) => `/tasks/${id}`,
@@ -52,7 +52,7 @@ export const api = createApi({
     }),
     deleteTask: builder.mutation<void, string>({
       query: (id) => ({ url: `/tasks/${id}`, method: "DELETE" }),
-      invalidatesTags: ["Task"],
+      invalidatesTags: [{ type: "Task", id: "LIST" }],
     }),
     createTag: builder.mutation<Tag, CreateTagDto>({
       query: (body) => ({ url: "/tags", method: "POST", body }),
