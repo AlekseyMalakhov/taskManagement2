@@ -53,14 +53,6 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
     onSuccess();
   }
 
-  function toggleTag(tagId: string, checked: boolean) {
-    const next = checked
-      ? [...selectedTagIds, tagId]
-      : selectedTagIds.filter((id) => id !== tagId);
-
-    setValue("tagIds", next, { shouldDirty: true, shouldValidate: true });
-  }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
       <TitleInput
@@ -85,7 +77,7 @@ export default function CreateTaskForm({ tags, onSuccess }: Props) {
       <TagsSelector
         tags={tags}
         selectedTagIds={selectedTagIds}
-        onToggle={toggleTag}
+        onToggle={(next) => setValue("tagIds", next, { shouldDirty: true, shouldValidate: true })}
         error={errors.tagIds?.message}
       />
       {isError && (

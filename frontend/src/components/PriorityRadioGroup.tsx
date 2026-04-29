@@ -15,7 +15,7 @@ export default function PriorityRadioGroup({ defaultValue, onValueChange }: Prop
       <p className="text-sm font-medium">Priority</p>
       <RadioGroup defaultValue={defaultValue} onValueChange={onValueChange} className="flex gap-2">
         {PRIORITY_OPTIONS.map((option) => (
-          <FieldLabel key={option.value} htmlFor={`${prefix}-${option.value}`} className="flex-1">
+          <FieldLabel key={option.value} htmlFor={`${prefix}-${option.value}`} className="flex-1 cursor-pointer">
             <Field orientation="horizontal">
               <FieldContent>
                 <FieldTitle>{option.label}</FieldTitle>
