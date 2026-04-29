@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import type { Tag, Task } from "@task-app/shared";
-import { createTaskSchema } from "@task-app/shared";
+import { updateTaskSchema } from "@task-app/shared";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
@@ -14,7 +14,7 @@ import StatusSelect from "./StatusSelect";
 import PriorityRadioGroup from "./PriorityRadioGroup";
 import DeadlineInput from "./DeadlineInput";
 
-type FormValues = z.infer<typeof createTaskSchema>;
+type FormValues = z.infer<typeof updateTaskSchema>;
 
 interface Props {
   task: Task;
@@ -31,7 +31,7 @@ export default function EditTaskForm({ task, tags, onSuccess }: Props) {
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(createTaskSchema),
+    resolver: zodResolver(updateTaskSchema),
     defaultValues: {
       title: task.title,
       description: task.description ?? "",
