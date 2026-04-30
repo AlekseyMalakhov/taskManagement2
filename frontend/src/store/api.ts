@@ -9,6 +9,7 @@ import type {
   CreateTaskDto,
   CreateTagDto,
   PatchTaskStatusDto,
+  PatchTaskTagsDto,
 } from "@task-app/shared";
 
 const rawBase = fetchBaseQuery({
@@ -61,6 +62,15 @@ export const api = createApi({
           error ? [] : ["Task", { type: "Task", id }],
       },
     ),
+    patchTaskTags: builder.mutation<Task, { id: string; tagIds: string[] }>({
+      query: ({ id, tagIds }) => ({
+        url: `/tasks/${id}/tags`,
+        method: "PATCH",
+        body: { tagIds } satisfies PatchTaskTagsDto,
+      }),
+      invalidatesTags: (_result, error, { id }) =>
+        error ? [] : ["Task", { type: "Task", id }],
+    }),
     getTags: builder.query<Tag[], void>({
       query: () => "/tags",
       providesTags: ["Tag"],
@@ -82,6 +92,7 @@ export const {
   useCreateTaskMutation,
   useUpdateTaskMutation,
   usePatchTaskStatusMutation,
+  usePatchTaskTagsMutation,
   useDeleteTaskMutation,
   useGetTagsQuery,
   useCreateTagMutation,

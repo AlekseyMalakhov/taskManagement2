@@ -13,6 +13,10 @@ export interface PatchTaskStatusDto {
   status: TaskStatus;
 }
 
+export interface PatchTaskTagsDto {
+  tagIds: string[];
+}
+
 export interface CreateTagDto {
   name: string;
 }

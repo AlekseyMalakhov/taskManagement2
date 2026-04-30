@@ -34,6 +34,10 @@ export const patchTaskStatusSchema = z.object({
   status: z.enum(["todo", "inProgress", "done"]),
 });
 
+export const patchTaskTagsSchema = z.object({
+  tagIds: z.array(z.string()).min(1, "At least one tag is required"),
+});
+
 export const createTagSchema = z.object({
   name: z.string().min(1, "Tag name is required"),
 });

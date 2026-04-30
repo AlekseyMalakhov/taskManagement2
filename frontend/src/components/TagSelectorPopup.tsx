@@ -4,7 +4,7 @@ import type { Task } from "@task-app/shared";
 import {
   useGetTagsQuery,
   useCreateTagMutation,
-  useUpdateTaskMutation,
+  usePatchTaskTagsMutation,
 } from "@/store/api";
 
 interface Props {
@@ -17,7 +17,7 @@ export default function TagSelectorPopup({ task }: Props) {
 
   const { data: allTags = [] } = useGetTagsQuery();
   const [createTag] = useCreateTagMutation();
-  const [updateTask] = useUpdateTaskMutation();
+  const [patchTaskTags] = usePatchTaskTagsMutation();
 
   const filtered = allTags.filter((tag) =>
     tag.name.toLowerCase().includes(search.toLowerCase()),
@@ -31,17 +31,6 @@ export default function TagSelectorPopup({ task }: Props) {
     setSearch("");
   }
 
-  function buildBody(tagIds: string[]) {
-    return {
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
-      deadline: task.deadline,
-      tagIds,
-    };
-  }
-
   function toggle(e: React.MouseEvent, tagId: string) {
     e.preventDefault();
     e.stopPropagation();
@@ -49,7 +38,7 @@ export default function TagSelectorPopup({ task }: Props) {
     if (next.has(tagId)) next.delete(tagId);
     else next.add(tagId);
     if (next.size === 0) return;
-    updateTask({ id: task.id, body: buildBody([...next]) });
+    patchTaskTags({ id: task.id, tagIds: [...next] });
   }
 
   async function handleCreate(e: React.MouseEvent) {
@@ -58,7 +47,7 @@ export default function TagSelectorPopup({ task }: Props) {
     const name = search.trim();
     if (!name) return;
     const newTag = await createTag({ name }).unwrap();
-    updateTask({ id: task.id, body: buildBody([...task.tags, newTag.id]) });
+    patchTaskTags({ id: task.id, tagIds: [...task.tags, newTag.id] });
     setSearch("");
   }
 

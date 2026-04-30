@@ -7,6 +7,7 @@ import {
   createTaskSchema,
   updateTaskSchema,
   patchTaskStatusSchema,
+  patchTaskTagsSchema,
 } from "@task-app/shared";
 
 const router = Router();
@@ -102,6 +103,33 @@ router.patch("/:id/status", (req: Request, res: Response) => {
   tasks[idx] = {
     ...tasks[idx],
     status: parsed.data.status,
+    updatedAt: new Date().toISOString(),
+  };
+  res.json({ data: tasks[idx] });
+});
+
+router.patch("/:id/tags", (req: Request, res: Response) => {
+  const idx = tasks.findIndex((t) => t.id === req.params.id);
+  if (idx === -1) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+  const parsed = patchTaskTagsSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: z.prettifyError(parsed.error) });
+    return;
+  }
+  const dto = parsed.data;
+  const unknownTags = dto.tagIds.filter((id) => !tags.find((t) => t.id === id));
+  if (unknownTags.length > 0) {
+    res
+      .status(400)
+      .json({ error: `Unknown tag IDs: ${unknownTags.join(", ")}` });
+    return;
+  }
+  tasks[idx] = {
+    ...tasks[idx],
+    tags: dto.tagIds,
     updatedAt: new Date().toISOString(),
   };
   res.json({ data: tasks[idx] });

@@ -1,3 +1,14 @@
 export type { TaskStatus, TaskPriority, Tag, Task } from "./types";
-export type { CreateTaskDto, PatchTaskStatusDto, CreateTagDto } from "./dto";
-export { createTaskSchema, updateTaskSchema, patchTaskStatusSchema, createTagSchema } from "./validation";
+export type {
+  CreateTaskDto,
+  PatchTaskStatusDto,
+  PatchTaskTagsDto,
+  CreateTagDto,
+} from "./dto";
+export {
+  createTaskSchema,
+  updateTaskSchema,
+  patchTaskStatusSchema,
+  patchTaskTagsSchema,
+  createTagSchema,
+} from "./validation";
