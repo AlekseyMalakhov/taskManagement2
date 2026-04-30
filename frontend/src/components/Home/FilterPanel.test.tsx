@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useEffect } from "react";
 import { MemoryRouter, Route, Routes, useSearchParams } from "react-router-dom";
 import FilterPanel from "./FilterPanel";
 
@@ -7,7 +8,9 @@ import FilterPanel from "./FilterPanel";
 let capturedParams: URLSearchParams;
 function ParamCapture() {
   const [params] = useSearchParams();
-  capturedParams = params;
+  useEffect(() => {
+    capturedParams = params;
+  });
   return null;
 }
 
