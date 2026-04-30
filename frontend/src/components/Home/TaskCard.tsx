@@ -14,7 +14,7 @@ import TagSelectorPopup from "../TagSelectorPopup";
 interface Props {
   task: Task;
   tagsById: Map<string, Tag>;
-  onTagClick?: (tagId: string) => void;
+  onTagClick: (tagId: string) => void;
   selectedTagIds?: Set<string>;
 }
 
@@ -99,11 +99,10 @@ export default function TaskCard({
                 key={tagId}
                 onClick={(e) => {
                   e.preventDefault();
-                  onTagClick?.(tagId);
+                  onTagClick(tagId);
                 }}
                 className={[
-                  "rounded-full px-2.5 py-0.5 text-xs transition-colors",
-                  onTagClick ? "cursor-pointer" : "",
+                  "rounded-full px-2.5 py-0.5 text-xs transition-colors cursor-pointer",
                   isSelected
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary hover:bg-secondary/70",

@@ -39,15 +39,12 @@ export default function HomePage() {
         <h1 className="text-2xl font-bold">Tasks</h1>
         <CreateTaskDialog tags={tags ?? []} />
       </div>
-
       <FilterPanel />
-
       <SelectedTagsPanel
         selectedTagIds={selectedTagIds}
         tagsById={tagsById}
         onTagClick={handleTagClick}
       />
-
       <TasksList
         tagsById={tagsById}
         selectedTagIds={selectedTagIds}

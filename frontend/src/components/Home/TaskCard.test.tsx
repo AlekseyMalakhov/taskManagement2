@@ -50,10 +50,11 @@ function renderCard(task: Partial<Task> = {}, extraProps: {
   selectedTagIds?: Set<string>;
 } = {}) {
   const fullTask: Task = { ...baseTask, ...task };
+  const props = { onTagClick: vi.fn(), ...extraProps };
   return render(
     <Provider store={makeStore()}>
       <MemoryRouter>
-        <TaskCard task={fullTask} tagsById={tagsById} {...extraProps} />
+        <TaskCard task={fullTask} tagsById={tagsById} {...props} />
       </MemoryRouter>
     </Provider>
   );
