@@ -10,7 +10,10 @@
       "mcp__context7__query-docs",
       "Bash(bunx shadcn@latest init --yes)",
       "mcp__ide__getDiagnostics",
-      "Bash(bunx shadcn *)"
+      "Bash(bunx shadcn *)",
+      "Bash(bunx playwright *)",
+      "Bash(node *)",
+      "Bash(curl -s http://localhost:3000/tags)"
     ]
   }
 }
