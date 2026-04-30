@@ -9,7 +9,7 @@ const deadlineSchema = z
   .refine((val) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return new Date(val) >= today;
+    return new Date(`${val}T00:00:00`) >= today;
   }, "Deadline must be today or in the future");
 
 const updateDeadlineSchema = z
