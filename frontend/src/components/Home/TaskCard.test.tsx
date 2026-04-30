@@ -8,6 +8,7 @@ import type { Task, Tag } from "@task-app/shared";
 // Mock the API module to avoid real network calls
 vi.mock("@/store/api", () => ({
   usePatchTaskStatusMutation: vi.fn(() => [vi.fn(), { isLoading: false, isError: false }]),
+  usePatchTaskTagsMutation: vi.fn(() => [vi.fn(), { isLoading: false, isError: false }]),
   useGetTagsQuery: vi.fn(() => ({ data: [], isLoading: false })),
   useCreateTagMutation: vi.fn(() => [vi.fn()]),
   useUpdateTaskMutation: vi.fn(() => [vi.fn()]),
