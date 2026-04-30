@@ -19,7 +19,7 @@ export function useFilteredTasks() {
   const { data: tasks, isLoading, isError } = useGetTasksQuery();
 
   const selectedTagIds = useMemo(
-    () => new Set(searchParams.getAll("tag")),
+    () => new Set(searchParams.getAll("tag").filter(Boolean)),
     [searchParams],
   );
   const rawStatus = searchParams.get("status");

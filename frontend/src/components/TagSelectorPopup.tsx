@@ -16,8 +16,10 @@ export default function TagSelectorPopup({ task }: Props) {
   const [search, setSearch] = useState("");
 
   const { data: allTags = [] } = useGetTagsQuery();
-  const [createTag, { isError: createError, reset: resetCreate }] = useCreateTagMutation();
-  const [patchTaskTags, { isError: patchError, reset: resetPatch }] = usePatchTaskTagsMutation();
+  const [createTag, { isError: createError, reset: resetCreate }] =
+    useCreateTagMutation();
+  const [patchTaskTags, { isError: patchError, reset: resetPatch }] =
+    usePatchTaskTagsMutation();
 
   const filtered = allTags.filter((tag) =>
     tag.name.toLowerCase().includes(search.toLowerCase()),
@@ -42,14 +44,18 @@ export default function TagSelectorPopup({ task }: Props) {
     patchTaskTags({ id: task.id, tagIds: [...next] });
   }
 
-  async function handleCreate(e: React.MouseEvent) {
+  function handleCreate(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     const name = search.trim();
     if (!name) return;
-    const newTag = await createTag({ name }).unwrap();
-    patchTaskTags({ id: task.id, tagIds: [...task.tags, newTag.id] });
-    setSearch("");
+    createTag({ name })
+      .unwrap()
+      .then((newTag) => {
+        patchTaskTags({ id: task.id, tagIds: [...task.tags, newTag.id] });
+        setSearch("");
+      })
+      .catch(console.error);
   }
 
   function stopAll(e: React.MouseEvent) {
@@ -85,7 +91,11 @@ export default function TagSelectorPopup({ task }: Props) {
               autoFocus
               type="text"
               value={search}
-              onChange={(e) => { resetCreate(); resetPatch(); setSearch(e.target.value); }}
+              onChange={(e) => {
+                resetCreate();
+                resetPatch();
+                setSearch(e.target.value);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && search.trim() && !exactMatch)
                   handleCreate(e as unknown as React.MouseEvent);
@@ -136,7 +146,10 @@ export default function TagSelectorPopup({ task }: Props) {
             </div>
             {(createError || patchError) && (
               <p className="mt-1.5 px-1 text-xs text-destructive">
-                {createError ? "Failed to create tag." : "Failed to update tags."} Please try again.
+                {createError
+                  ? "Failed to create tag."
+                  : "Failed to update tags."}{" "}
+                Please try again.
               </p>
             )}
           </div>
