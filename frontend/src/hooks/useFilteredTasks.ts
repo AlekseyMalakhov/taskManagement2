@@ -20,7 +20,7 @@ export function useFilteredTasks() {
   const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
 
   const filteredTasks = useMemo(() => {
-    if (!tasks) return tasks;
+    if (!tasks) return;
     const q = searchQuery.toLowerCase();
     const filtered = tasks.filter((t) => {
       if (statusFilter && t.status !== statusFilter) return false;

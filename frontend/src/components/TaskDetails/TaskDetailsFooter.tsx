@@ -27,7 +27,7 @@ export default function TaskDetailsFooter({ task, tags, id }: Props) {
     useDeleteTaskMutation();
 
   async function handleDelete() {
-    const result = await deleteTask(id!);
+    const result = await deleteTask(id);
     if (!("error" in result)) navigate("/");
   }
 

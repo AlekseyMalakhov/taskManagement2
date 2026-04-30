@@ -31,6 +31,7 @@ export default function TasksList({
       </p>
     );
   if (!filteredTasks?.length)
+    // non-empty filteredTasks guarantees non-empty paginatedTasks
     return <p className="text-muted-foreground">No tasks yet.</p>;
 
   return (
