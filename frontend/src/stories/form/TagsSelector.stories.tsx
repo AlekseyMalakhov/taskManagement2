@@ -36,20 +36,22 @@ export const WithPreselection: Story = {
   args: { selectedTagIds: ["1", "3"] },
 };
 
+function InteractiveTagsSelector(args: React.ComponentProps<typeof TagsSelector>) {
+  const [selected, setSelected] = useState<string[]>([]);
+  return (
+    <TagsSelector
+      {...args}
+      selectedTagIds={selected}
+      onToggle={(next) => {
+        setSelected(next);
+        args.onToggle(next);
+      }}
+    />
+  );
+}
+
 export const Interactive: Story = {
-  render: (args) => {
-    const [selected, setSelected] = useState<string[]>([]);
-    return (
-      <TagsSelector
-        {...args}
-        selectedTagIds={selected}
-        onToggle={(next) => {
-          setSelected(next);
-          args.onToggle(next);
-        }}
-      />
-    );
-  },
+  render: (args) => <InteractiveTagsSelector {...args} />,
 };
 
 export const WithError: Story = {

@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import {
   useGetTaskQuery,
   useGetTagsQuery,
@@ -10,10 +11,12 @@ import TaskDetailsFooter from "@/components/TaskDetails/TaskDetailsFooter";
 
 export default function TaskDetailsPage() {
   const { id } = useParams();
-  const { data: task, isLoading, isError } = useGetTaskQuery(id!);
+  const { data: task, isLoading, isError } = useGetTaskQuery(id ?? skipToken);
   const { data: tags } = useGetTagsQuery();
   const [patchTaskStatus, { isLoading: isUpdating, isError: isPatchError }] =
     usePatchTaskStatusMutation();
+
+  if (!id) return null;
 
   return (
     <div className="space-y-6">

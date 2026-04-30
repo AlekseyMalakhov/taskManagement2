@@ -161,6 +161,22 @@ src/
 - Deadline display format: `DD/MM/YYYY` (split on `-`, reverse, join `/`)
 - Click handlers on tags inside `<Link>` elements use `e.stopPropagation()` to prevent navigation
 
+### Storybook
+
+- **Version**: Storybook 10 (`storybook@10`, `@storybook/react-vite@10`, `@storybook/addon-a11y@10`)
+- **Run**: `bun storybook` from `frontend/` — dev server on port 6006
+- **Build**: `bun build-storybook` — outputs to `frontend/storybook-static/`
+- **Config**: `frontend/.storybook/main.ts` + `frontend/.storybook/preview.ts`
+- **Tailwind**: injected via `@tailwindcss/vite` plugin in `viteFinal` (not PostCSS); `preview.ts` imports `../src/index.css`
+- **`@` alias**: wired in `viteFinal` → `resolve.alias`
+- **`__dirname`**: config uses `fileURLToPath(new URL(".", import.meta.url))` — required because `"type": "module"` in `package.json`
+- **`fn()` spy**: import from `storybook/test` (not `@storybook/test` — that package no longer exists in v10)
+- **Story files**: `frontend/src/stories/` — `ui/`, `form/`, `home/` subdirectories; 13 stories total
+- **What has stories**: all UI primitives, all standalone form fields, `Pagination` (wrapped in `MemoryRouter`)
+- **What does NOT have stories**: components with Redux/RTK Query hooks (`TaskCard`, `TasksList`, `FilterPanel`, etc.) — require store mocking not yet set up
+- **Story format**: CSF3 — `satisfies Meta<typeof Component>`, `StoryObj<typeof meta>`; all type-only imports use `import type` (required by `verbatimModuleSyntax`)
+- **`Pagination` stories**: decorated with `MemoryRouter` (component calls `useSearchParams`)
+
 ### Testing
 
 - Always use the `frontend-test-runner` agent to create and run frontend unit tests — never write or execute them directly.
