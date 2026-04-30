@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { Tag } from "@task-app/shared";
 import { tags } from "../store";
@@ -22,7 +23,7 @@ router.post("/", (req: Request, res: Response) => {
     res.status(400).json({ error: "A tag with this name already exists" });
     return;
   }
-  const tag: Tag = { id: name.replace(/\s+/g, "-").toLowerCase(), name };
+  const tag: Tag = { id: randomUUID(), name };
   tags.push(tag);
   res.status(201).json({ data: tag });
 });
