@@ -16,8 +16,8 @@ export default function TagSelectorPopup({ task }: Props) {
   const [search, setSearch] = useState("");
 
   const { data: allTags = [] } = useGetTagsQuery();
-  const [createTag] = useCreateTagMutation();
-  const [patchTaskTags] = usePatchTaskTagsMutation();
+  const [createTag, { isError: createError, reset: resetCreate }] = useCreateTagMutation();
+  const [patchTaskTags, { isError: patchError, reset: resetPatch }] = usePatchTaskTagsMutation();
 
   const filtered = allTags.filter((tag) =>
     tag.name.toLowerCase().includes(search.toLowerCase()),
@@ -34,6 +34,7 @@ export default function TagSelectorPopup({ task }: Props) {
   function toggle(e: React.MouseEvent, tagId: string) {
     e.preventDefault();
     e.stopPropagation();
+    resetPatch();
     const next = new Set(task.tags);
     if (next.has(tagId)) next.delete(tagId);
     else next.add(tagId);
@@ -84,7 +85,7 @@ export default function TagSelectorPopup({ task }: Props) {
               autoFocus
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { resetCreate(); resetPatch(); setSearch(e.target.value); }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && search.trim() && !exactMatch)
                   handleCreate(e as unknown as React.MouseEvent);
@@ -133,6 +134,11 @@ export default function TagSelectorPopup({ task }: Props) {
                 </p>
               )}
             </div>
+            {(createError || patchError) && (
+              <p className="mt-1.5 px-1 text-xs text-destructive">
+                {createError ? "Failed to create tag." : "Failed to update tags."} Please try again.
+              </p>
+            )}
           </div>
         </>
       )}
