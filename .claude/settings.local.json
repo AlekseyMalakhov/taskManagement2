@@ -15,7 +15,11 @@
       "Bash(node *)",
       "Bash(curl -s http://localhost:3000/tags)",
       "Bash(bun storybook *)",
-      "Bash(curl -s http://localhost:6006)"
+      "Bash(curl -s http://localhost:6006)",
+      "Bash(bun info *)",
+      "Bash(bun pm *)",
+      "Bash(bun x *)",
+      "Bash(bun remove *)"
     ]
   }
 }

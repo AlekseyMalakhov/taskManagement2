@@ -1,10 +1,13 @@
 import path from "path";
+import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import type { StorybookConfig } from "@storybook/react-vite";
 
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(ts|tsx)"],
-  addons: ["@storybook/addon-essentials", "@storybook/addon-a11y"],
+  addons: ["@storybook/addon-a11y"],
   framework: { name: "@storybook/react-vite", options: {} },
   async viteFinal(config) {
     const { mergeConfig } = await import("vite");

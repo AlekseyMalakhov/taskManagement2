@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { fn } from "storybook/test";
 import TagsSelector from "@/components/TaskForm/TagsSelector";
 import type { Tag } from "@task-app/shared";
 
