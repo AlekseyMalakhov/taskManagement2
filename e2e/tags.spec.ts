@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import {
   createTag,
   createTask,
-  cleanupAllTasks,
+  resetBackend,
   getAllTags,
 } from "./fixtures/api-helpers";
 import { taskData } from "./fixtures/test-data";
@@ -28,7 +28,7 @@ async function uniqueTagName(
 
 test.describe("Tags", () => {
   test.beforeEach(async ({ request }) => {
-    await cleanupAllTasks(request);
+    await resetBackend(request);
   });
 
   // -----------------------------------------------------------------------

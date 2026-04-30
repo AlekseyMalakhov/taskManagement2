@@ -1,6 +1,6 @@
 import type { APIRequestContext } from "@playwright/test";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = "http://localhost:4000";
 
 export interface Tag {
   id: string;
@@ -91,4 +91,10 @@ export async function cleanupAllTasks(
 ): Promise<void> {
   const tasks = await getAllTasks(request);
   await Promise.all(tasks.map((t) => deleteTask(request, t.id)));
+}
+
+export async function resetBackend(
+  request: APIRequestContext,
+): Promise<void> {
+  await request.post(`${API_BASE}/test/reset`);
 }

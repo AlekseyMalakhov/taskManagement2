@@ -11,7 +11,9 @@ import type {
   PatchTaskStatusDto,
 } from "@task-app/shared";
 
-const rawBase = fetchBaseQuery({ baseUrl: "http://localhost:3000" });
+const rawBase = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_API_URL ?? "http://localhost:3000",
+});
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,

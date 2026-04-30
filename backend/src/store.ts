@@ -1,11 +1,13 @@
 import type { Task, Tag } from "@task-app/shared";
 
-export const tags: Tag[] = [
+const INITIAL_TAGS: Tag[] = [
   { id: "work", name: "work" },
   { id: "personal", name: "personal" },
   { id: "urgent", name: "urgent" },
   { id: "learning", name: "learning" },
 ];
+
+export const tags: Tag[] = [...INITIAL_TAGS];
 
 export const tasks: Task[] = [
   {
@@ -611,3 +613,10 @@ export const tasks: Task[] = [
     updatedAt: "2026-04-25T20:00:00.000Z",
   },
 ];
+
+export function resetStore(): void {
+  // for e2e tests only
+  // change const variables in place - clean tasks and restore initial tags
+  tasks.splice(0, tasks.length);
+  tags.splice(0, tags.length, ...INITIAL_TAGS);
+}

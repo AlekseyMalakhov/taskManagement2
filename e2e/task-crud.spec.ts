@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import {
   createTag,
   createTask,
-  cleanupAllTasks,
+  resetBackend,
 } from "./fixtures/api-helpers";
 import {
   FUTURE_DEADLINE,
@@ -12,7 +12,7 @@ import {
 
 test.describe("Task CRUD", () => {
   test.beforeEach(async ({ request }) => {
-    await cleanupAllTasks(request);
+    await resetBackend(request);
   });
 
   // -----------------------------------------------------------------------
