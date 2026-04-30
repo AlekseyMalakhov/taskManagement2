@@ -78,6 +78,16 @@ export const api = createApi({
     deleteTask: builder.mutation<void, string>({
       query: (id) => ({ url: `/tasks/${id}`, method: "DELETE" }),
       invalidatesTags: [{ type: "Task", id: "LIST" }],
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getTask", id, () => null as unknown as Task),
+          );
+        } catch {
+          // noop
+        }
+      },
     }),
     createTag: builder.mutation<Tag, CreateTagDto>({
       query: (body) => ({ url: "/tags", method: "POST", body }),

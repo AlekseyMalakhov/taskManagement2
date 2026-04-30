@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import {
@@ -11,12 +11,19 @@ import TaskDetailsFooter from "@/components/TaskDetails/TaskDetailsFooter";
 
 export default function TaskDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data: task, isLoading, isError } = useGetTaskQuery(id ?? skipToken);
   const { data: tags } = useGetTagsQuery();
   const [patchTaskStatus, { isLoading: isUpdating, isError: isPatchError }] =
     usePatchTaskStatusMutation();
 
   if (!id) return null;
+
+  // Cache was cleared after deletion; redirect instead of showing a blank page
+  if (!isLoading && !isError && !task) {
+    navigate("/", { replace: true });
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -31,7 +38,7 @@ export default function TaskDetailsPage() {
       {isLoading && <p className="text-muted-foreground">Loading task…</p>}
       {isError && <p className="text-destructive">Failed to load task.</p>}
 
-      {task && (
+      {task && !isError && (
         <>
           <TaskDetailsBody
             task={task}
