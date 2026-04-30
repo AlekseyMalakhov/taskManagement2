@@ -1,7 +1,16 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useGetTasksQuery } from "@/store/api";
-import type { TaskStatus, TaskPriority } from "@task-app/shared";
+import { STATUS_OPTIONS, PRIORITY_OPTIONS } from "@/lib/taskConstants";
+
+const VALID_STATUSES = new Set<string>(STATUS_OPTIONS.map((o) => o.value));
+const VALID_PRIORITIES = new Set<string>(PRIORITY_OPTIONS.map((o) => o.value));
+const VALID_SORTS = new Set([
+  "createdAt_desc",
+  "createdAt_asc",
+  "deadline_asc",
+  "deadline_desc",
+]);
 
 export const PAGE_SIZE = 10;
 
@@ -13,10 +22,16 @@ export function useFilteredTasks() {
     () => new Set(searchParams.getAll("tag")),
     [searchParams],
   );
-  const statusFilter = searchParams.get("status") as TaskStatus | null;
-  const priorityFilter = searchParams.get("priority") as TaskPriority | null;
+  const rawStatus = searchParams.get("status");
+  const statusFilter = rawStatus && VALID_STATUSES.has(rawStatus) ? rawStatus : null;
+
+  const rawPriority = searchParams.get("priority");
+  const priorityFilter = rawPriority && VALID_PRIORITIES.has(rawPriority) ? rawPriority : null;
+
   const searchQuery = searchParams.get("search") ?? "";
-  const sortParam = searchParams.get("sort") ?? "createdAt_desc";
+
+  const rawSort = searchParams.get("sort");
+  const sortParam = rawSort && VALID_SORTS.has(rawSort) ? rawSort : "createdAt_desc";
   const pageParam = parseInt(searchParams.get("page") ?? "1", 10);
 
   const filteredTasks = useMemo(() => {

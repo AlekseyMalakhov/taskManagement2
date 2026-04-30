@@ -18,12 +18,13 @@ Root scripts: `dev:frontend`, `dev:backend`, `typecheck`
 - `Task` — `{ id, title, description?, status, priority, deadline, tags: string[], createdAt, updatedAt }`
 - `Tag` — `{ id, name }`
 
-**DTOs** (`shared/src/dto.ts`): `CreateTaskDto`, `PatchTaskStatusDto`, `CreateTagDto`
+**DTOs** (`shared/src/dto.ts`): `CreateTaskDto`, `PatchTaskStatusDto`, `PatchTaskTagsDto`, `CreateTagDto`
 
 - `CreateTaskDto` is used for both create and update — there is no separate `UpdateTaskDto`
 - `PatchTaskStatusDto` — `{ status: TaskStatus }` — used for the status-only patch endpoint
+- `PatchTaskTagsDto` — `{ tagIds: string[] }` — used for the tags-only patch endpoint
 
-**Validation** (`shared/src/validation.ts`): `createTaskSchema`, `updateTaskSchema`, `patchTaskStatusSchema`, `createTagSchema`
+**Validation** (`shared/src/validation.ts`): `createTaskSchema`, `updateTaskSchema`, `patchTaskStatusSchema`, `patchTaskTagsSchema`, `createTagSchema`
 
 All Zod schemas live in `shared/src/validation.ts` and are exported from `shared/src/index.ts`. Both backend and frontend import from `@task-app/shared` — never define duplicate schemas locally.
 
@@ -39,6 +40,8 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 
 `patchTaskStatusSchema` — `{ status: z.enum([...]) }` — used for the status-only PATCH endpoint.
 
+`patchTaskTagsSchema` — `{ tagIds: z.array(z.string()).min(1) }` — used for the tags-only PATCH endpoint.
+
 ## Backend
 
 - Express on `process.env.PORT` (default 3000), CORS for `http://localhost:5173`
@@ -51,11 +54,15 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 - `POST /tasks` — create; validates with `createTaskSchema`; returns 201
 - `PUT /tasks/:id` — full replace; validates with `updateTaskSchema`; preserves `id` and `createdAt`
 - `PATCH /tasks/:id/status` — status-only update; validates with `patchTaskStatusSchema`; returns updated task
+- `PATCH /tasks/:id/tags` — tags-only update; validates with `patchTaskTagsSchema`; returns updated task
 - `DELETE /tasks/:id` — 204 No Content
 
 **Tags** (`/tags`):
 - `GET /tags` — all tags
-- `POST /tags` — create; case-insensitive duplicate check (400); ID generated from name (lowercase, spaces → dashes)
+- `POST /tags` — create; case-insensitive duplicate check (400); ID generated with `randomUUID()`
+
+**Test utilities** (`/test`):
+- `POST /test/reset` — resets in-memory store to empty state; used by E2E tests only
 
 ## Frontend
 
@@ -64,7 +71,7 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 ### State management
 
 - Redux store: `frontend/src/store/store.ts`
-- RTK Query API: `frontend/src/store/api.ts` — endpoints: `getTasks`, `getTask`, `getTags`, `createTask`, `updateTask`, `patchTaskStatus`, `deleteTask`, `createTag`
+- RTK Query API: `frontend/src/store/api.ts` — endpoints: `getTasks`, `getTask`, `getTags`, `createTask`, `updateTask`, `patchTaskStatus`, `patchTaskTags`, `deleteTask`, `createTag`
 - RTK Query's `baseQuery` unwraps the `{ data }` envelope automatically
 - Filtering and pagination are **client-side** — `getTasks` fetches all tasks, `useFilteredTasks` does the rest
 
@@ -86,6 +93,8 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 Returns: `{ filteredTasks, paginatedTasks, page, totalPages, isLoading, isError }`
 
 `PAGE_SIZE = 10` (exported constant)
+
+Invalid URL param values are silently ignored: unknown `?status=` / `?priority=` values are treated as "no filter" (full list shown); unknown `?sort=` values fall back to `createdAt_desc`.
 
 ### Pages
 
@@ -130,13 +139,19 @@ src/
 | `TaskDetailsFooter` | Edit/Delete button bar; owns edit modal (`EditTaskForm`) and delete modal (`DeleteTaskModal`); navigates to `/` after successful delete |
 | `DeleteTaskModal` | Confirmation modal for task deletion; shows error state; props: `onCancel`, `onConfirm`, `isDeleting`, `isError` |
 
+**Shared components** (root `components/`):
+
+| Component | Responsibility |
+|---|---|
+| `TagSelectorPopup` | Inline tag editor popup; props: `{ task: Task }`; uses `useGetTagsQuery`, `useCreateTagMutation`, `usePatchTaskTagsMutation`; supports creating new tags and toggling existing ones; used in `TaskCard` and `TaskDetailsBody` |
+
 **`TaskForm/`**
 
 | Component | Responsibility |
 |---|---|
 | `CreateTaskDialog` | "New Task" button + modal wrapping `CreateTaskForm` |
 | `CreateTaskForm` | React Hook Form + Zod; composes field components below; submits `POST` with `createTaskSchema` resolver |
-| `EditTaskForm` | Same as `CreateTaskForm`; pre-filled with current task values; submits full `PUT` with `createTaskSchema` resolver |
+| `EditTaskForm` | Same as `CreateTaskForm`; pre-filled with current task values; submits full `PUT` with `updateTaskSchema` resolver |
 | `TitleInput` | Labeled text input with error display; extends `ComponentPropsWithoutRef<"input">` |
 | `DescriptionInput` | Labeled textarea; extends `ComponentPropsWithoutRef<"textarea">` |
 | `StatusSelect` | Labeled select populated from `STATUS_OPTIONS`; extends `ComponentPropsWithoutRef<"select">` |
