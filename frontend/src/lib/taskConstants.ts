@@ -2,7 +2,11 @@ import type { TaskStatus, TaskPriority } from "@task-app/shared";
 
 export function isOverdue(deadline: string, status: TaskStatus): boolean {
   if (status === "done") return false;
-  return deadline < new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  // String comparison is fine here.
+  // YYYY-MM-DD format is intentionally designed so lexicographic order equals chronological order
+  return deadline < today;
 }
 
 export const STATUS_LABEL: Record<TaskStatus, string> = {
