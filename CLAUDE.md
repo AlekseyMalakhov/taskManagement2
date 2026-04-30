@@ -46,7 +46,7 @@ All Zod schemas live in `shared/src/validation.ts` and are exported from `shared
 - All responses: `{ data: T }` on success, `{ error: string }` on failure
 
 **Tasks** (`/tasks`):
-- `GET /tasks` — all tasks; optional `?tag=id` (repeatable, AND logic)
+- `GET /tasks` — all tasks
 - `GET /tasks/:id` — single task (404 if missing)
 - `POST /tasks` — create; validates with `createTaskSchema`; returns 201
 - `PUT /tasks/:id` — full replace; validates with `updateTaskSchema`; preserves `id` and `createdAt`

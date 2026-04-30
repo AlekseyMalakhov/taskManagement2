@@ -10,13 +10,8 @@ import {
 
 const router = Router();
 
-router.get("/", (req: Request, res: Response) => {
-  const { tag } = req.query;
-  const result =
-    typeof tag === "string" && tag
-      ? tasks.filter((t) => t.tags.includes(tag))
-      : tasks;
-  res.json({ data: result });
+router.get("/", (_req: Request, res: Response) => {
+  res.json({ data: tasks });
 });
 
 router.get("/:id", (req: Request, res: Response) => {

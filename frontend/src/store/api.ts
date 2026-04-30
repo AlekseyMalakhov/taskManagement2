@@ -31,11 +31,8 @@ export const api = createApi({
   baseQuery,
   tagTypes: ["Task", "Tag"],
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], { tag?: string } | void>({
-      query: (params) => ({
-        url: "/tasks",
-        ...(params ? { params } : {}),
-      }),
+    getTasks: builder.query<Task[], void>({
+      query: () => "/tasks",
       providesTags: [{ type: "Task", id: "LIST" }],
     }),
     getTask: builder.query<Task, string>({
