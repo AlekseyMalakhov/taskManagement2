@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
+import { z } from "zod";
 import type { Tag } from "@task-app/shared";
 import { tags } from "../store";
 import { createTagSchema } from "@task-app/shared";
@@ -13,7 +14,7 @@ router.get("/", (_req: Request, res: Response) => {
 router.post("/", (req: Request, res: Response) => {
   const parsed = createTagSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
+    res.status(400).json({ error: z.prettifyError(parsed.error) });
     return;
   }
   const { name } = parsed.data;

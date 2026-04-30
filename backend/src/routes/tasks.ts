@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
+import { z } from "zod";
 import type { Task } from "@task-app/shared";
 import { tasks, tags } from "../store";
 import {
@@ -26,7 +27,7 @@ router.get("/:id", (req: Request, res: Response) => {
 router.post("/", (req: Request, res: Response) => {
   const parsed = createTaskSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
+    res.status(400).json({ error: z.prettifyError(parsed.error) });
     return;
   }
   const dto = parsed.data;
@@ -61,7 +62,7 @@ router.put("/:id", (req: Request, res: Response) => {
   }
   const parsed = updateTaskSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
+    res.status(400).json({ error: z.prettifyError(parsed.error) });
     return;
   }
   const dto = parsed.data;
@@ -95,7 +96,7 @@ router.patch("/:id/status", (req: Request, res: Response) => {
   }
   const parsed = patchTaskStatusSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
+    res.status(400).json({ error: z.prettifyError(parsed.error) });
     return;
   }
   tasks[idx] = {

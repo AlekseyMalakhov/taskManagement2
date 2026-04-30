@@ -38,7 +38,7 @@ export default function TaskDetailsPage() {
             patchTaskStatus={patchTaskStatus}
           />
 
-          <TaskDetailsFooter task={task} tags={tags} id={id} />
+          <TaskDetailsFooter task={task} tags={tags ?? []} id={id} />
         </>
       )}
     </div>
