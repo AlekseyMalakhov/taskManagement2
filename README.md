@@ -4,7 +4,7 @@ Fullstack-приложение для управления задачами. П�
 
 ## Технический стек
 
-- **Frontend:** React, Vite, React Router, Redux Toolkit, RTK Query, React Hook Form, Zod, Tailwind CSS
+- **Frontend:** React, Vite, React Router, Redux Toolkit, RTK Query, React Hook Form, Zod, Tailwind CSS, shadcn/ui
 - **Backend:** Express, TypeScript, Zod
 - **Shared-пакет:** TypeScript-типы, DTO и схемы валидации
 - **Инструменты:** Bun workspaces, Vitest, Playwright, Storybook
@@ -113,7 +113,8 @@ Frontend - это React-приложение на Vite. Для работы с A
 Основные части frontend:
 
 - `src/pages/` - страницы приложения
-- `src/components/` - переиспользуемые и feature-specific компоненты
+- `src/components/` - React компоненты
+- `src/components/ui` - shadcn/ui компоненты
 - `src/hooks/` - пользовательские React-хуки
 - `src/store/` - Redux store и RTK Query API slice
 - `src/lib/` - общие frontend-утилиты и константы
